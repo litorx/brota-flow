@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brota — Paywall V2 (Pastel/Warm)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --brand-real:#F4A7B9;--brand-real-deep:#E8889E;
+  --brand-ai:#A8D5A2;--brand-ai-deep:#7EBF78;
+  --brand-correct:#7DD4A3;--brand-warning:#FFD07A;
+  --bg:#FFF8F2;--bg2:#FFF0E8;--card:#FFFFFF;
+  --text:#3D2C2E;--text2:#9B8A8C;--text3:#C4B5B7;
+  --border:rgba(61,44,46,0.08);
+  --shadow:0 2px 12px rgba(61,44,46,0.06);
+  --shadow2:0 6px 24px rgba(61,44,46,0.10);
+  --plant-color:#C4B0E0;--plant-color-rgb:196,176,224;
+  --r:20px;
+}
+body{background:#F4F2EF;color:var(--text);font-family:'Nunito',system-ui,sans-serif;min-height:100vh;}
+
+/* ── STUDIO ── */
+.studio{max-width:1260px;margin:0 auto;padding:40px 24px 64px;}
+.studio-header{text-align:center;margin-bottom:28px;}
+.brand-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.brand-title{font-size:20px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.brand-title em{font-style:normal;font-size:12px;font-weight:500;color:var(--text3);display:block;margin-top:4px;}
+.brand-sub{font-size:12.5px;color:var(--text2);line-height:1.65;max-width:720px;margin:0 auto;}
+.controls{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:36px;}
+.state-sep{width:1px;height:20px;background:var(--border);}
+.state-btn{padding:7px 18px;border:1.5px solid var(--border);border-radius:999px;background:transparent;color:var(--text2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.25s;}
+.state-btn.active{background:var(--brand-real);color:white;border-color:var(--brand-real);}
+.state-btn:hover:not(.active){border-color:var(--brand-real);color:var(--brand-real-deep);}
+.stage{display:flex;gap:56px;justify-content:center;align-items:flex-start;}
+
+/* ── PHONE ── */
+.phone-wrapper{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.phone-label{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;}
+.pill{display:inline-flex;align-items:center;padding:4px 13px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.10em;}
+.pill.android{background:linear-gradient(135deg,#34A853,#4285F4);color:white;}
+.pill.ios{background:linear-gradient(135deg,#1C1C1E,#48484A);color:white;}
+.phone-label .desc{font-size:11.5px;color:var(--text3);max-width:280px;line-height:1.4;}
+.phone{width:375px;height:740px;background:var(--bg);border-radius:48px;box-shadow:0 24px 80px rgba(61,44,46,0.12),0 0 0 1px rgba(61,44,46,0.06);overflow:hidden;position:relative;}
+.phone-screen{width:100%;height:100%;position:relative;overflow:hidden;}
+.screen{position:absolute;inset:0;background:var(--bg);}
+.statusbar{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:absolute;top:0;left:0;right:0;z-index:10;pointer-events:none;}
+.stime{font-size:15px;font-weight:700;color:var(--text);}
+.sicons{display:flex;gap:5px;color:var(--text2);font-size:11px;}
+.dyna{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:118px;height:34px;background:rgba(61,44,46,0.10);border-radius:999px;z-index:30;pointer-events:none;}
+.a-screen .dyna{display:none;}
+
+/* ── SCROLL BODY ── */
+.scroll-body{
+  position:absolute;top:44px;left:0;right:0;bottom:0;
+  overflow-y:auto;overflow-x:hidden;
+  padding:20px 22px 36px;
+  display:flex;flex-direction:column;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.scroll-body::-webkit-scrollbar{display:none;}
+.scroll-body>*{flex-shrink:0;}
+.ios-screen .scroll-body{top:0;padding-top:64px;}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+@keyframes fadeUpBounce{from{opacity:0;transform:translateY(16px) scale(0.97);}to{opacity:1;transform:none;}}
+@keyframes plantAlive{
+  0%,100%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-4px) scale(1.03);}
+}
+@keyframes glowSoft{
+  0%,100%{opacity:0.5;transform:scale(0.94);}
+  50%{opacity:0.8;transform:scale(1.02);}
+}
+@keyframes ctaGlow{0%,100%{box-shadow:0 4px 18px rgba(var(--plant-color-rgb),0.18);}50%{box-shadow:0 10px 36px rgba(var(--plant-color-rgb),0.36);}}
+@keyframes ctaShimmer{0%{transform:translateX(-200%) skewX(-14deg);}40%,100%{transform:translateX(200%) skewX(-14deg);}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+
+/* ── ANIM ELEMENTS ── */
+.anim-el{opacity:0;animation:fadeUpBounce 0.50s cubic-bezier(0.34,1.56,0.64,1) both;}
+.ios-screen .anim-el{animation-name:fadeUp;animation-timing-function:cubic-bezier(0.32,0.72,0,1);}
+.reinit{animation:none!important;opacity:0!important;transition:none!important;}
+
+/* ── SOFT BLOBS ── */
+.blob{position:absolute;pointer-events:none;z-index:0;border-radius:50%;filter:blur(80px);}
+.blob1{width:400px;height:400px;top:-160px;left:-120px;background:var(--brand-real);opacity:0.08;}
+.blob2{width:320px;height:320px;bottom:-80px;right:-100px;background:var(--plant-color);opacity:0.07;transition:background 0.7s;}
+.ios-screen .blob1{width:360px;height:360px;opacity:0.07;filter:blur(90px);}
+.ios-screen .blob2{width:280px;height:280px;opacity:0.06;filter:blur(84px);}
+
+/* ── PLANT HERO ── */
+.plant-hero{
+  display:flex;flex-direction:column;align-items:center;
+  margin-bottom:24px;position:relative;z-index:1;
+}
+.pcircle-wrap{
+  position:relative;width:140px;height:140px;
+  display:flex;align-items:center;justify-content:center;
+}
+/* Glow suave por tras — respira devagar */
+.pcircle-wrap::before{
+  content:'';position:absolute;
+  width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle, rgba(var(--plant-color-rgb),0.22) 0%, rgba(var(--plant-color-rgb),0) 70%);
+  animation:glowSoft 4s ease-in-out infinite;
+  transition:background 0.7s;
+}
+.pcircle{
+  position:relative;width:120px;height:120px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(var(--plant-color-rgb),0.08);
+  z-index:2;transition:background 0.7s;
+}
+.ios-screen .pcircle{
+  backdrop-filter:blur(10px) saturate(130%);
+  background:rgba(255,255,255,0.40);
+}
+.pemoji{
+  font-size:0;display:flex;align-items:center;justify-content:center;
+  z-index:3;position:relative;
+  animation:plantAlive 4.5s ease-in-out infinite;
+}
+.pemoji svg{
+  width:88px;height:88px;
+  filter:drop-shadow(0 4px 14px rgba(var(--plant-color-rgb),0.28));
+}
+.plabel{
+  margin-top:8px;
+  font-family:'Instrument Serif',serif;font-style:italic;
+  font-size:15px;color:var(--plant-color);transition:color 0.7s;
+}
+
+/* ── H1 / SUB ── */
+.ph1{font-size:26px;font-weight:800;line-height:1.18;color:var(--text);text-align:center;padding:0 8px;margin-bottom:6px;z-index:1;position:relative;}
+.psub{font-size:14px;font-weight:400;color:var(--text2);text-align:center;padding:0 10px;margin-bottom:20px;z-index:1;position:relative;line-height:1.5;}
+.pac{color:var(--plant-color);font-weight:600;transition:color 0.7s;}
+
+/* ── BENEFIT PILLS ── */
+.benefits{display:flex;flex-direction:column;gap:8px;margin-bottom:22px;z-index:1;position:relative;}
+.ben{display:flex;align-items:center;gap:13px;padding:13px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);}
+.bicon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.btitle{font-size:13.5px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:2px;}
+.bdesc{font-size:11.5px;font-weight:400;color:var(--text2);line-height:1.3;}
+
+/* ── DIVIDER + SECTION HEAD ── */
+.sdivider{height:1px;background:var(--border);margin:20px 0 16px;z-index:1;position:relative;}
+.shead{font-size:17px;font-weight:700;color:var(--text);margin-bottom:12px;z-index:1;position:relative;}
+
+/* ── FEATURES CARD ── */
+.fcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:22px;z-index:1;position:relative;overflow:hidden;}
+.ios-screen .fcard{backdrop-filter:blur(10px) saturate(130%);background:rgba(255,255,255,0.88);box-shadow:var(--shadow),0 1px 0 rgba(255,255,255,0.60) inset;}
+.feat{display:flex;align-items:center;gap:13px;padding:12px 16px;}
+.feat+.feat{border-top:1px solid var(--border);}
+.ficon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ftitle{font-size:13px;font-weight:700;color:var(--text);line-height:1.28;margin-bottom:1px;}
+.fdesc{font-size:11px;font-weight:400;color:var(--text2);line-height:1.28;}
+
+/* ── STATS ── */
+.stats{display:flex;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:visible;margin-bottom:18px;z-index:1;position:relative;}
+.ios-screen .stats{backdrop-filter:blur(10px) saturate(130%);background:rgba(255,255,255,0.88);box-shadow:var(--shadow),0 1px 0 rgba(255,255,255,0.60) inset;}
+.stat{flex:1;padding:14px 10px;text-align:center;}
+.stat+.stat{border-left:1px solid var(--border);}
+.snum{font-family:'Instrument Serif',serif;font-style:italic;font-size:26px;color:var(--plant-color);line-height:1;margin-bottom:5px;transition:color 0.7s;}
+.slabel{font-size:11px;font-weight:500;color:var(--text2);line-height:1.35;}
+
+/* ── TESTIMONIALS CAROUSEL ── */
+.tcarousel{position:relative;z-index:1;margin-bottom:20px;overflow:hidden;width:100%;}
+.ttrack{display:flex;width:500%;will-change:transform;transition:transform 0.48s cubic-bezier(0.32,0.72,0,1);}
+.a-screen .ttrack{transition:transform 0.50s cubic-bezier(0.34,1.56,0.64,1);}
+.tslide{width:20%;flex-shrink:0;padding:16px 18px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);box-sizing:border-box;}
+.ios-screen .tslide{backdrop-filter:blur(10px) saturate(120%);background:rgba(255,255,255,0.85);box-shadow:var(--shadow),0 1px 0 rgba(255,255,255,0.50) inset;}
+.tdots{display:flex;justify-content:center;gap:5px;margin-top:10px;}
+.tdot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:width 0.36s cubic-bezier(0.34,1.56,0.64,1),background 0.4s;}
+.tdot.act{width:20px;border-radius:999px;background:var(--plant-color);}
+.tstars{font-size:14px;color:var(--brand-correct);margin-bottom:8px;letter-spacing:1.5px;}
+.tquote{font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:var(--text);line-height:1.52;margin-bottom:8px;}
+.tauthor{font-size:11.5px;font-weight:500;color:var(--text2);}
+
+/* ── PLANS ── */
+.planslabel{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);text-align:center;margin-bottom:10px;z-index:1;position:relative;}
+.plans{display:flex;gap:10px;margin-bottom:22px;z-index:1;position:relative;}
+.plan{
+  flex:1;padding:16px;border-radius:var(--r);cursor:pointer;
+  background:var(--card);border:2px solid var(--border);
+  box-shadow:var(--shadow);
+  transition:all 0.32s cubic-bezier(0.34,1.56,0.64,1);
+}
+.ios-screen .plan{backdrop-filter:blur(14px) saturate(130%);background:rgba(255,255,255,0.85);box-shadow:var(--shadow),0 1px 0 rgba(255,255,255,0.50) inset;}
+.plan.sel{
+  border-color:var(--plant-color);
+  box-shadow:0 4px 20px rgba(var(--plant-color-rgb),0.18);
+  background:rgba(var(--plant-color-rgb),0.06);
+}
+.ios-screen .plan.sel{background:rgba(var(--plant-color-rgb),0.10);box-shadow:0 4px 16px rgba(var(--plant-color-rgb),0.14),0 1px 0 rgba(255,255,255,0.50) inset;}
+.pbadge{font-size:10px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--brand-correct);margin-bottom:4px;}
+.pprice{font-size:22px;font-weight:800;color:var(--text);line-height:1;}
+.pprice span{font-size:12px;font-weight:400;color:var(--text2);}
+.pdetail{font-size:10.5px;font-weight:400;color:var(--text2);margin-top:5px;line-height:1.4;}
+
+/* ── CTA ── */
+.cta{
+  width:100%;padding:18px 24px;border:none;border-radius:999px;cursor:pointer;
+  background:var(--plant-color);
+  font-family:'Nunito',system-ui,sans-serif;font-size:16px;font-weight:700;color:white;
+  margin-bottom:10px;z-index:1;position:relative;
+  box-shadow:0 4px 18px rgba(var(--plant-color-rgb),0.24);
+  transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),background 0.7s,box-shadow 0.7s;
+  animation:ctaGlow 2.8s ease-in-out 2.4s infinite;
+}
+.a-screen .cta{overflow:hidden;border-radius:999px;}
+.a-screen .cta::after{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:55%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.26),transparent);
+  transform:translateX(-200%) skewX(-14deg);
+  animation:ctaShimmer 4s ease-in-out 3.5s infinite;
+  pointer-events:none;
+}
+.ios-screen .cta{
+  backdrop-filter:blur(20px) saturate(180%);
+  background:rgba(var(--plant-color-rgb),0.85);
+  border:1px solid rgba(var(--plant-color-rgb),0.40);
+  box-shadow:0 1px 0 rgba(255,255,255,0.30) inset,0 4px 18px rgba(var(--plant-color-rgb),0.22);
+}
+.cta:hover{transform:scale(1.02);}
+.cta:active{transform:scale(0.97);}
+.trialnote{font-size:11.5px;font-weight:500;color:var(--text3);text-align:center;margin-bottom:14px;z-index:1;position:relative;}
+.guarantee{font-size:11px;font-weight:500;color:var(--text3);text-align:center;padding-top:12px;border-top:1px solid var(--border);z-index:1;position:relative;}
+</style>
+</head>
+<body>
+<div class="studio">
+
+<div class="studio-header">
+  <div class="brand-eyebrow">Brota &middot; Paywall V2</div>
+  <div class="brand-title">Paywall Pastel / Warm / Light-first <em>Nunito rounded &middot; Cores pastel &middot; Cards com sombra suave &middot; Ciclo-aware</em></div>
+  <div class="brand-sub">
+    Refs: <strong>Flo</strong> (pink pastel, light-first) &middot; <strong>Clue</strong> (cycle-centered) &middot; <strong>Catzy/Bitepal</strong> (fofo, rounded) &middot; <strong>Finch</strong> (companion)
+  </div>
+</div>
+
+<div class="controls">
+  <button class="state-btn active" onclick="setState('s1',this)">Lavanda / Ana</button>
+  <button class="state-btn" onclick="setState('s2',this)">Girassol / Bia</button>
+  <button class="state-btn" onclick="setState('s3',this)">Cacto / Carol</button>
+  <button class="state-btn" onclick="setState('s4',this)">Cerejeira / Dani</button>
+  <button class="state-btn" onclick="setState('s5',this)">Lotus / Eva</button>
+  <div class="state-sep"></div>
+  <button class="state-btn" onclick="selectPlan('monthly')">Mensal</button>
+  <button class="state-btn" onclick="selectPlan('annual')">Anual</button>
+</div>
+
+<div class="stage">
+
+<!-- ═══════ ANDROID ═══════ -->
+<div class="phone-wrapper">
+  <div class="phone-label">
+    <span class="pill android">Android &middot; Nunito</span>
+    <span class="desc">Rounded type &middot; Spring bounce &middot; Soft blobs &middot; White cards</span>
+  </div>
+  <div class="phone">
+    <div class="phone-screen">
+      <div class="screen a-screen" id="ascreen">
+        <div class="statusbar">
+          <span class="stime">9:41</span>
+          <span class="sicons">&#9679; &#9679; &#9679;</span>
+        </div>
+        <div class="blob blob1"></div>
+        <div class="blob blob2" id="ablob2"></div>
+
+        <div class="scroll-body" id="abody">
+          <div class="plant-hero anim-el" style="animation-delay:0.36s">
+            <div class="pcircle-wrap">
+              <div class="pcircle"><span class="pemoji" id="apemoji"></span></div>
+            </div>
+            <div class="plabel" id="aplabel">Lavanda</div>
+          </div>
+          <div class="ph1 anim-el" style="animation-delay:0.62s">Tudo pronto, <span id="aname">Ana</span>.</div>
+          <div class="psub anim-el" style="animation-delay:0.74s">Nos pr&oacute;ximos 14 dias, sua <span id="apsub" class="pac">Lavanda</span> vai:</div>
+
+          <div class="benefits">
+            <div class="ben anim-el" style="animation-delay:0.88s">
+              <div class="bicon" style="background:rgba(255,208,122,0.18)">&#128737;</div>
+              <div><div class="btitle">Aparecer quando voc&ecirc; for abrir o <span class="netw">Instagram</span></div><div class="bdesc">Antes de voc&ecirc; entrar, ela j&aacute; est&aacute; l&aacute;.</div></div>
+            </div>
+            <div class="ben anim-el" style="animation-delay:1.02s">
+              <div class="bicon" style="background:rgba(244,167,185,0.18)">&#127807;</div>
+              <div><div class="btitle">Limpar juntas o que te machuca no feed</div><div class="bdesc">Em 7 dias, voc&ecirc; sente a diferen&ccedil;a.</div></div>
+            </div>
+            <div class="ben anim-el" style="animation-delay:1.16s">
+              <div class="bicon" style="background:rgba(125,212,163,0.18)">&#127800;</div>
+              <div><div class="btitle">Te conectar com outras mulheres que entendem</div><div class="bdesc">Sem nomes. S&oacute; plantas.</div></div>
+            </div>
+          </div>
+
+          <div class="sdivider anim-el" style="animation-delay:1.30s"></div>
+          <div class="shead anim-el" style="animation-delay:1.40s">O que sua <span id="apfeat" class="pac">Lavanda</span> faz por voc&ecirc;</div>
+          <div class="fcard">
+            <div class="feat anim-el" style="animation-delay:1.52s"><div class="ficon" style="background:rgba(255,208,122,0.18)">&#128737;</div><div><div class="ftitle">Apare&ccedil;o antes das redes te pegarem</div><div class="fdesc">Prote&ccedil;&atilde;o ativa toda vez que voc&ecirc; abre o <span class="netw">Instagram</span>.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:1.62s"><div class="ficon" style="background:rgba(244,167,185,0.18)">&#9986;</div><div><div class="ftitle">Feed limpo em 7 dias</div><div class="fdesc">Removemos juntas o que te afeta.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:1.72s"><div class="ficon" style="background:rgba(244,167,185,0.18)">&#128172;</div><div><div class="ftitle">Voc&ecirc; escreve, eu entendo</div><div class="fdesc">Di&aacute;rio com voz. Sem jarg&atilde;o.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:1.82s"><div class="ficon" style="background:rgba(196,176,224,0.18)">&#127769;</div><div><div class="ftitle">Me adapto ao seu ciclo</div><div class="fdesc">Nos dias mais sens&iacute;veis, fico mais gentil.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:1.92s"><div class="ficon" style="background:rgba(125,212,163,0.18)">&#127800;</div><div><div class="ftitle">Um jardim de mulheres</div><div class="fdesc">Comunidade an&ocirc;nima. Sem rostos, s&oacute; plantas.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:2.02s"><div class="ficon" style="background:rgba(168,213,162,0.18)">&#128202;</div><div><div class="ftitle">Voc&ecirc; v&ecirc; a mudan&ccedil;a acontecer</div><div class="fdesc">Insights semanais do seu progresso real.</div></div></div>
+          </div>
+
+          <div class="sdivider anim-el" style="animation-delay:2.16s"></div>
+          <div class="shead anim-el" style="animation-delay:2.26s">O que outras mulheres dizem</div>
+          <div class="stats" style="opacity:1" id="astats">
+            <div class="stat"><div class="snum" data-target="87" data-suffix="%">87%</div><div class="slabel">sentiram menos compara&ccedil;&atilde;o</div></div>
+            <div class="stat"><div class="snum" data-target="14" data-suffix=" dias">14 dias</div><div class="slabel">pra sentir a diferen&ccedil;a</div></div>
+            <div class="stat"><div class="snum" data-target="12" data-suffix="mil">12mil</div><div class="slabel">mulheres j&aacute; come&ccedil;aram</div></div>
+          </div>
+
+          <div class="tcarousel" style="opacity:1" id="atcar">
+            <div class="ttrack" id="attrack">
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;Em 3 dias eu j&aacute; n&atilde;o abria o celular no autom&aacute;tico. Nunca pensei que uma planta fosse fazer isso.&rdquo;</div><div class="tauthor">Mariana C., 24 &middot; S&atilde;o Paulo</div></div>
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;Ela apareceu na hora certa. Senti que algu&eacute;m estava do meu lado sem me julgar.&rdquo;</div><div class="tauthor">Julia R., 22 &middot; Belo Horizonte</div></div>
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;Meu feed n&atilde;o me machuca mais como antes. Parece que respiro melhor.&rdquo;</div><div class="tauthor">Beatriz M., 26 &middot; Rio de Janeiro</div></div>
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;Comecei s&oacute; pra testar e n&atilde;o consegui parar. Me entende melhor que muita gente.&rdquo;</div><div class="tauthor">Camila A., 19 &middot; Curitiba</div></div>
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;O jardim an&ocirc;nimo me ajudou a perceber que n&atilde;o estava sozinha.&rdquo;</div><div class="tauthor">Sofia L., 23 &middot; Fortaleza</div></div>
+            </div>
+            <div class="tdots" id="atdots"><div class="tdot act"></div><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
+          </div>
+
+          <div class="sdivider anim-el" style="animation-delay:2.40s"></div>
+          <div class="planslabel anim-el" style="animation-delay:2.50s">Escolha seu plano</div>
+          <div class="plans anim-el" style="animation-delay:2.60s">
+            <div class="plan sel" id="aplan-monthly" onclick="selectPlan('monthly')"><div class="pprice">R$19,90<span>/m&ecirc;s</span></div><div class="pdetail">Cobrado mensalmente<br>Cancele quando quiser</div></div>
+            <div class="plan" id="aplan-annual" onclick="selectPlan('annual')"><div class="pbadge">49% off</div><div class="pprice">R$9,99<span>/m&ecirc;s</span></div><div class="pdetail">R$119,90/ano<br>cobrado anualmente</div></div>
+          </div>
+
+          <button class="cta" id="acta" onclick="ctaTap(this)">Come&ccedil;ar 14 dias gr&aacute;tis</button>
+          <div class="trialnote">Sem cobran&ccedil;as agora &middot; Cancele quando quiser</div>
+          <div class="guarantee">&#127807; Sisterhood Guarantee &middot; 30 dias, sem perguntas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ iOS ═══════ -->
+<div class="phone-wrapper">
+  <div class="phone-label">
+    <span class="pill ios">iOS 26 &middot; SF Rounded</span>
+    <span class="desc">Rounded type &middot; HIG bezier &middot; Soft orbs &middot; Glass cards</span>
+  </div>
+  <div class="phone">
+    <div class="phone-screen">
+      <div class="screen ios-screen" id="iosscreen">
+        <div class="dyna"></div>
+        <div class="blob blob1"></div>
+        <div class="blob blob2" id="iblob2"></div>
+
+        <div class="scroll-body" id="iosbody">
+          <div class="plant-hero anim-el" style="animation-delay:0.36s">
+            <div class="pcircle-wrap">
+              <div class="pcircle"><span class="pemoji" id="iospemoji"></span></div>
+            </div>
+            <div class="plabel" id="iosplabel">Lavanda</div>
+          </div>
+          <div class="ph1 anim-el" style="animation-delay:0.62s">Tudo pronto, <span id="iosname">Ana</span>.</div>
+          <div class="psub anim-el" style="animation-delay:0.74s">Nos pr&oacute;ximos 14 dias, sua <span id="iospsub" class="pac">Lavanda</span> vai:</div>
+
+          <div class="benefits">
+            <div class="ben anim-el" style="animation-delay:0.88s"><div class="bicon" style="background:rgba(255,208,122,0.18)">&#128737;</div><div><div class="btitle">Aparecer quando voc&ecirc; for abrir o <span class="netw">Instagram</span></div><div class="bdesc">Antes de voc&ecirc; entrar, ela j&aacute; est&aacute; l&aacute;.</div></div></div>
+            <div class="ben anim-el" style="animation-delay:1.02s"><div class="bicon" style="background:rgba(244,167,185,0.18)">&#127807;</div><div><div class="btitle">Limpar juntas o que te machuca no feed</div><div class="bdesc">Em 7 dias, voc&ecirc; sente a diferen&ccedil;a.</div></div></div>
+            <div class="ben anim-el" style="animation-delay:1.16s"><div class="bicon" style="background:rgba(125,212,163,0.18)">&#127800;</div><div><div class="btitle">Te conectar com outras mulheres que entendem</div><div class="bdesc">Sem nomes. S&oacute; plantas.</div></div></div>
+          </div>
+
+          <div class="sdivider anim-el" style="animation-delay:1.30s"></div>
+          <div class="shead anim-el" style="animation-delay:1.40s">O que sua <span id="iospfeat" class="pac">Lavanda</span> faz por voc&ecirc;</div>
+          <div class="fcard">
+            <div class="feat anim-el" style="animation-delay:1.52s"><div class="ficon" style="background:rgba(255,208,122,0.18)">&#128737;</div><div><div class="ftitle">Apare&ccedil;o antes das redes te pegarem</div><div class="fdesc">Prote&ccedil;&atilde;o ativa toda vez que voc&ecirc; abre o <span class="netw">Instagram</span>.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:1.62s"><div class="ficon" style="background:rgba(244,167,185,0.18)">&#9986;</div><div><div class="ftitle">Feed limpo em 7 dias</div><div class="fdesc">Removemos juntas o que te afeta.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:1.72s"><div class="ficon" style="background:rgba(244,167,185,0.18)">&#128172;</div><div><div class="ftitle">Voc&ecirc; escreve, eu entendo</div><div class="fdesc">Di&aacute;rio com voz. Sem jarg&atilde;o.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:1.82s"><div class="ficon" style="background:rgba(196,176,224,0.18)">&#127769;</div><div><div class="ftitle">Me adapto ao seu ciclo</div><div class="fdesc">Nos dias mais sens&iacute;veis, fico mais gentil.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:1.92s"><div class="ficon" style="background:rgba(125,212,163,0.18)">&#127800;</div><div><div class="ftitle">Um jardim de mulheres</div><div class="fdesc">Comunidade an&ocirc;nima. Sem rostos, s&oacute; plantas.</div></div></div>
+            <div class="feat anim-el" style="animation-delay:2.02s"><div class="ficon" style="background:rgba(168,213,162,0.18)">&#128202;</div><div><div class="ftitle">Voc&ecirc; v&ecirc; a mudan&ccedil;a acontecer</div><div class="fdesc">Insights semanais do seu progresso real.</div></div></div>
+          </div>
+
+          <div class="sdivider anim-el" style="animation-delay:2.16s"></div>
+          <div class="shead anim-el" style="animation-delay:2.26s">O que outras mulheres dizem</div>
+          <div class="stats" style="opacity:1" id="iostats">
+            <div class="stat"><div class="snum" data-target="87" data-suffix="%">87%</div><div class="slabel">sentiram menos compara&ccedil;&atilde;o</div></div>
+            <div class="stat"><div class="snum" data-target="14" data-suffix=" dias">14 dias</div><div class="slabel">pra sentir a diferen&ccedil;a</div></div>
+            <div class="stat"><div class="snum" data-target="12" data-suffix="mil">12mil</div><div class="slabel">mulheres j&aacute; come&ccedil;aram</div></div>
+          </div>
+
+          <div class="tcarousel" style="opacity:1" id="iostcar">
+            <div class="ttrack" id="iosttrack">
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;Em 3 dias eu j&aacute; n&atilde;o abria o celular no autom&aacute;tico. Nunca pensei que uma planta fosse fazer isso.&rdquo;</div><div class="tauthor">Mariana C., 24 &middot; S&atilde;o Paulo</div></div>
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;Ela apareceu na hora certa. Senti que algu&eacute;m estava do meu lado sem me julgar.&rdquo;</div><div class="tauthor">Julia R., 22 &middot; Belo Horizonte</div></div>
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;Meu feed n&atilde;o me machuca mais como antes. Parece que respiro melhor.&rdquo;</div><div class="tauthor">Beatriz M., 26 &middot; Rio de Janeiro</div></div>
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;Comecei s&oacute; pra testar e n&atilde;o consegui parar. Me entende melhor que muita gente.&rdquo;</div><div class="tauthor">Camila A., 19 &middot; Curitiba</div></div>
+              <div class="tslide"><div class="tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="tquote">&ldquo;O jardim an&ocirc;nimo me ajudou a perceber que n&atilde;o estava sozinha.&rdquo;</div><div class="tauthor">Sofia L., 23 &middot; Fortaleza</div></div>
+            </div>
+            <div class="tdots" id="iostdots"><div class="tdot act"></div><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>
+          </div>
+
+          <div class="sdivider anim-el" style="animation-delay:2.40s"></div>
+          <div class="planslabel anim-el" style="animation-delay:2.50s">Escolha seu plano</div>
+          <div class="plans anim-el" style="animation-delay:2.60s">
+            <div class="plan sel" id="iosplan-monthly" onclick="selectPlan('monthly')"><div class="pprice">R$19,90<span>/m&ecirc;s</span></div><div class="pdetail">Cobrado mensalmente<br>Cancele quando quiser</div></div>
+            <div class="plan" id="iosplan-annual" onclick="selectPlan('annual')"><div class="pbadge">49% off</div><div class="pprice">R$9,99<span>/m&ecirc;s</span></div><div class="pdetail">R$119,90/ano<br>cobrado anualmente</div></div>
+          </div>
+
+          <button class="cta" id="ioscta" onclick="ctaTap(this)">Come&ccedil;ar 14 dias gr&aacute;tis</button>
+          <div class="trialnote">Sem cobran&ccedil;as agora &middot; Cancele quando quiser</div>
+          <div class="guarantee">&#127807; Sisterhood Guarantee &middot; 30 dias, sem perguntas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /stage -->
+</div><!-- /studio -->
+
+<script>
+var states = {
+  s1:{name:'Ana',  plant:'Lavanda',   color:'#C4B0E0',rgb:'196,176,224',net:'Instagram'},
+  s2:{name:'Bia',  plant:'Girassol',  color:'#F2CE6B',rgb:'242,206,107',net:'TikTok'},
+  s3:{name:'Carol',plant:'Cacto',     color:'#8CC5A0',rgb:'140,197,160',net:'Instagram'},
+  s4:{name:'Dani', plant:'Cerejeira', color:'#F2B5C4',rgb:'242,181,196',net:'Instagram'},
+  s5:{name:'Eva',  plant:'Lotus',     color:'#D4B8D4',rgb:'212,184,212',net:'TikTok'}
+};
+
+var plantSVGs = {
+  Lavanda: '<svg viewBox="0 0 64 64" fill="none">'
+    /* Vasinho fofo */
+    +'<path d="M22 58C22 58 20 60 21.5 61.5C23 63 41 63 42.5 61.5C44 60 42 58 42 58" fill="#D4A574" opacity="0.85"/>'
+    +'<path d="M20 58H44" stroke="#B8885A" stroke-width="2.2" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="58" rx="12" ry="2.5" fill="#E8C4A0" opacity="0.5"/>'
+    +'<path d="M25 60.5H39" stroke="#C49464" stroke-width="0.7" opacity="0.4" stroke-linecap="round"/>'
+    /* Terra/musgo */
+    +'<ellipse cx="32" cy="57" rx="10" ry="2" fill="#6BAF68" opacity="0.3"/>'
+    +'<circle cx="28" cy="57" r="0.9" fill="#7DB87A" opacity="0.4"/>'
+    +'<circle cx="36" cy="56.8" r="0.7" fill="#7DB87A" opacity="0.35"/>'
+    /* Caule principal */
+    +'<path d="M32 56C32 56 31.5 48 31.8 42C32.2 36 32.5 30 32 25" stroke="#5C8F58" stroke-width="2.6" stroke-linecap="round"/>'
+    /* Hastes laterais */
+    +'<path d="M32 40C28 38 24 36 21 28" stroke="#6BA068" stroke-width="2" stroke-linecap="round" opacity="0.9"/>'
+    +'<path d="M32 38C36 36 40 34 43 27" stroke="#6BA068" stroke-width="2" stroke-linecap="round" opacity="0.9"/>'
+    +'<path d="M32 47C28 45.5 24 45 20 42" stroke="#6BA068" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>'
+    /* Folhas fofas */
+    +'<path d="M32 48C27 47 22 47.5 19 50.5C22.5 50.7 27.5 49 32 48Z" fill="#7DB87A" opacity="0.85"/>'
+    +'<path d="M32 44C37 43 42 43.5 45 46C41.5 46.2 36.5 44.5 32 44Z" fill="#7DB87A" opacity="0.8"/>'
+    +'<path d="M25 36C22 35 17 35.5 15 38C18 38.2 22 36.5 25 36Z" fill="#8BC48A" opacity="0.75"/>'
+    +'<path d="M39 33C42 32 47 32.5 49 34.5C46 34.7 42 33.5 39 33Z" fill="#8BC48A" opacity="0.7"/>'
+    /* Espiga central */
+    +'<ellipse cx="32" cy="22" rx="4" ry="5" fill="__CLR__"/>'
+    +'<ellipse cx="32" cy="17" rx="3.6" ry="4.4" fill="__CLR__" opacity="0.97"/>'
+    +'<ellipse cx="32" cy="12.5" rx="3.1" ry="3.8" fill="__CLR__" opacity="0.92"/>'
+    +'<ellipse cx="32" cy="8.5" rx="2.6" ry="3.2" fill="__CLR__" opacity="0.87"/>'
+    +'<ellipse cx="32" cy="5.2" rx="2" ry="2.4" fill="__CLR__" opacity="0.78"/>'
+    +'<ellipse cx="32" cy="3" rx="1.4" ry="1.6" fill="__CLR__" opacity="0.65"/>'
+    +'<ellipse cx="29.4" cy="20" rx="2" ry="2.6" fill="__CLR__" opacity="0.55"/>'
+    +'<ellipse cx="34.6" cy="19" rx="2" ry="2.6" fill="__CLR__" opacity="0.55"/>'
+    +'<ellipse cx="29.8" cy="14.5" rx="1.6" ry="2" fill="__CLR__" opacity="0.45"/>'
+    +'<ellipse cx="34.2" cy="13.5" rx="1.6" ry="2" fill="__CLR__" opacity="0.45"/>'
+    +'<ellipse cx="30.2" cy="9" rx="1.3" ry="1.6" fill="__CLR__" opacity="0.38"/>'
+    +'<ellipse cx="33.8" cy="8" rx="1.3" ry="1.6" fill="__CLR__" opacity="0.38"/>'
+    /* Espiga esquerda */
+    +'<ellipse cx="21" cy="26" rx="3.2" ry="4.2" fill="__CLR__" opacity="0.92"/>'
+    +'<ellipse cx="21" cy="21.5" rx="2.8" ry="3.6" fill="__CLR__" opacity="0.95"/>'
+    +'<ellipse cx="21" cy="17.5" rx="2.4" ry="3.2" fill="__CLR__" opacity="0.9"/>'
+    +'<ellipse cx="21" cy="14" rx="2" ry="2.7" fill="__CLR__" opacity="0.85"/>'
+    +'<ellipse cx="21" cy="11" rx="1.6" ry="2.2" fill="__CLR__" opacity="0.78"/>'
+    +'<ellipse cx="21" cy="8.5" rx="1.2" ry="1.6" fill="__CLR__" opacity="0.65"/>'
+    +'<ellipse cx="18.8" cy="23" rx="1.4" ry="2" fill="__CLR__" opacity="0.48"/>'
+    +'<ellipse cx="23.2" cy="24" rx="1.4" ry="2" fill="__CLR__" opacity="0.48"/>'
+    /* Espiga direita */
+    +'<ellipse cx="43" cy="25" rx="3.2" ry="4.2" fill="__CLR__" opacity="0.92"/>'
+    +'<ellipse cx="43" cy="20.5" rx="2.8" ry="3.6" fill="__CLR__" opacity="0.95"/>'
+    +'<ellipse cx="43" cy="16.5" rx="2.4" ry="3.2" fill="__CLR__" opacity="0.9"/>'
+    +'<ellipse cx="43" cy="13" rx="2" ry="2.7" fill="__CLR__" opacity="0.85"/>'
+    +'<ellipse cx="43" cy="10" rx="1.6" ry="2.2" fill="__CLR__" opacity="0.78"/>'
+    +'<ellipse cx="43" cy="7.5" rx="1.2" ry="1.6" fill="__CLR__" opacity="0.65"/>'
+    +'<ellipse cx="40.8" cy="22" rx="1.4" ry="2" fill="__CLR__" opacity="0.48"/>'
+    +'<ellipse cx="45.2" cy="23" rx="1.4" ry="2" fill="__CLR__" opacity="0.48"/>'
+    /* Espiga extra esquerda pequena */
+    +'<ellipse cx="18" cy="40" rx="2" ry="2.8" fill="__CLR__" opacity="0.65"/>'
+    +'<ellipse cx="18" cy="37.5" rx="1.7" ry="2.4" fill="__CLR__" opacity="0.7"/>'
+    +'<ellipse cx="18" cy="35.5" rx="1.4" ry="2" fill="__CLR__" opacity="0.6"/>'
+    /* Highlights */
+    +'<ellipse cx="32" cy="3" rx="0.8" ry="1" fill="white" opacity="0.35"/>'
+    +'<ellipse cx="21" cy="8.5" rx="0.7" ry="0.9" fill="white" opacity="0.3"/>'
+    +'<ellipse cx="43" cy="7.5" rx="0.7" ry="0.9" fill="white" opacity="0.3"/>'
+    +'</svg>',
+
+  Girassol: '<svg viewBox="0 0 64 64" fill="none">'
+    /* Vasinho fofo */
+    +'<path d="M22 58C22 58 20 60 21.5 61.5C23 63 41 63 42.5 61.5C44 60 42 58 42 58" fill="#D4A574" opacity="0.85"/>'
+    +'<path d="M20 58H44" stroke="#B8885A" stroke-width="2.2" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="58" rx="12" ry="2.5" fill="#E8C4A0" opacity="0.5"/>'
+    +'<path d="M25 60.5H39" stroke="#C49464" stroke-width="0.7" opacity="0.4" stroke-linecap="round"/>'
+    /* Terra/musgo */
+    +'<ellipse cx="32" cy="57" rx="10" ry="2" fill="#6BAF68" opacity="0.3"/>'
+    +'<circle cx="29" cy="57" r="0.9" fill="#7DB87A" opacity="0.4"/>'
+    +'<circle cx="35" cy="56.8" r="0.7" fill="#7DB87A" opacity="0.35"/>'
+    /* Caule gordinho */
+    +'<path d="M32 56C32 52 31.5 46 32 42C32.5 38 32 36 32 34" stroke="#5A9E54" stroke-width="3.2" stroke-linecap="round"/>'
+    /* Folhas fofas arredondadas */
+    +'<path d="M32 46C29 45 24 45 20 47C21 48.5 25 48.5 29 47.5C31 47 32 46 32 46Z" fill="#7DB87A" opacity="0.88"/>'
+    +'<path d="M32 50C35 49 40 49 44 51C43 52.5 39 52.5 35 51.5C33 51 32 50 32 50Z" fill="#7DB87A" opacity="0.82"/>'
+    +'<path d="M32 53C29 52.5 25 53 23 54.5C25 55 28 54.5 32 53Z" fill="#8BC48A" opacity="0.6"/>'
+    /* Petalas gordas e arredondadas — camada externa */
+    +'<ellipse cx="32" cy="3" rx="4.5" ry="10" fill="__CLR__"/>'
+    +'<ellipse cx="32" cy="35" rx="4.2" ry="9" fill="__CLR__" opacity="0.5"/>'
+    +'<ellipse cx="12" cy="20" rx="10" ry="4.5" fill="__CLR__"/>'
+    +'<ellipse cx="52" cy="20" rx="10" ry="4.5" fill="__CLR__"/>'
+    +'<ellipse cx="17" cy="8" rx="4" ry="9.5" fill="__CLR__" opacity="0.94" transform="rotate(-45 17 8)"/>'
+    +'<ellipse cx="47" cy="8" rx="4" ry="9.5" fill="__CLR__" opacity="0.94" transform="rotate(45 47 8)"/>'
+    +'<ellipse cx="17" cy="32" rx="4" ry="9.5" fill="__CLR__" opacity="0.6" transform="rotate(45 17 32)"/>'
+    +'<ellipse cx="47" cy="32" rx="4" ry="9.5" fill="__CLR__" opacity="0.6" transform="rotate(-45 47 32)"/>'
+    /* Petalas intermediarias */
+    +'<ellipse cx="21" cy="6" rx="3.5" ry="7.5" fill="__CLR__" opacity="0.85" transform="rotate(-22 21 6)"/>'
+    +'<ellipse cx="43" cy="6" rx="3.5" ry="7.5" fill="__CLR__" opacity="0.85" transform="rotate(22 43 6)"/>'
+    +'<ellipse cx="12" cy="13" rx="3.5" ry="7" fill="__CLR__" opacity="0.78" transform="rotate(-68 12 13)"/>'
+    +'<ellipse cx="52" cy="13" rx="3.5" ry="7" fill="__CLR__" opacity="0.78" transform="rotate(68 52 13)"/>'
+    +'<ellipse cx="12" cy="27" rx="3" ry="6" fill="__CLR__" opacity="0.55" transform="rotate(-112 12 27)"/>'
+    +'<ellipse cx="52" cy="27" rx="3" ry="6" fill="__CLR__" opacity="0.55" transform="rotate(112 52 27)"/>'
+    /* Centro fofo — grande e quente */
+    +'<circle cx="32" cy="20" r="10.5" fill="#D4960A"/>'
+    +'<circle cx="32" cy="20" r="8.5" fill="#C48A08"/>'
+    +'<circle cx="32" cy="20" r="6" fill="#A87000" opacity="0.6"/>'
+    /* Textura de sementes espiral */
+    +'<circle cx="30" cy="18" r="1.1" fill="#7A5000" opacity="0.5"/>'
+    +'<circle cx="34" cy="18" r="1.1" fill="#7A5000" opacity="0.5"/>'
+    +'<circle cx="32" cy="22.5" r="1.1" fill="#7A5000" opacity="0.45"/>'
+    +'<circle cx="28.5" cy="20.5" r="1" fill="#7A5000" opacity="0.4"/>'
+    +'<circle cx="35.5" cy="20.5" r="1" fill="#7A5000" opacity="0.4"/>'
+    +'<circle cx="30.5" cy="15.5" r="0.9" fill="#7A5000" opacity="0.35"/>'
+    +'<circle cx="33.5" cy="15.5" r="0.9" fill="#7A5000" opacity="0.35"/>'
+    +'<circle cx="28" cy="18" r="0.8" fill="#7A5000" opacity="0.3"/>'
+    +'<circle cx="36" cy="18" r="0.8" fill="#7A5000" opacity="0.3"/>'
+    +'<circle cx="32" cy="24.5" r="0.8" fill="#7A5000" opacity="0.3"/>'
+    /* Borda do disco */
+    +'<circle cx="32" cy="20" r="10.5" stroke="#9C6500" stroke-width="1.4" fill="none" opacity="0.5"/>'
+    /* Carinha fofa! */
+    +'<circle cx="29" cy="18.5" r="1.4" fill="#5A3800"/>'
+    +'<circle cx="35" cy="18.5" r="1.4" fill="#5A3800"/>'
+    +'<circle cx="29" cy="18" r="0.55" fill="white" opacity="0.8"/>'
+    +'<circle cx="35" cy="18" r="0.55" fill="white" opacity="0.8"/>'
+    +'<path d="M30 22.5C30.8 23.6 33.2 23.6 34 22.5" stroke="#5A3800" stroke-width="1.1" stroke-linecap="round" fill="none"/>'
+    /* Bochechas rosadas */
+    +'<circle cx="26.5" cy="21" r="2" fill="#F4A7B9" opacity="0.3"/>'
+    +'<circle cx="37.5" cy="21" r="2" fill="#F4A7B9" opacity="0.3"/>'
+    /* Highlight */
+    +'<ellipse cx="28.5" cy="15.5" rx="3" ry="2.5" fill="white" opacity="0.12"/>'
+    +'</svg>',
+
+  Cacto: '<svg viewBox="0 0 64 64" fill="none">'
+    +'<path d="M19.5 55C19 57 19.5 59.5 21 61C22.5 62.5 41.5 62.5 43 61C44.5 59.5 45 57 44.5 55" fill="#D4A574" opacity="0.88"/>'
+    +'<path d="M19.5 55C19 57 19.5 59.5 21 61C22.5 62.5 41.5 62.5 43 61C44.5 59.5 45 57 44.5 55" stroke="#B8885A" stroke-width="1.2" fill="none" opacity="0.6"/>'
+    +'<ellipse cx="32" cy="55" rx="13.5" ry="2.5" fill="#E8C4A0" opacity="0.6"/>'
+    +'<path d="M18.5 55H45.5" stroke="#B8885A" stroke-width="2.2" stroke-linecap="round"/>'
+    +'<path d="M22 58C22 58 23 59 24 59" stroke="#C49464" stroke-width="0.7" opacity="0.5" stroke-linecap="round"/>'
+    +'<path d="M38 59C39 59 40 58.5 40.5 58" stroke="#C49464" stroke-width="0.7" opacity="0.45" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="57" rx="5" ry="1.5" fill="#C49464" opacity="0.15"/>'
+    +'<path d="M23.5 55C23 48 22 42 22 36C22 28 23 20 24.5 14.5C26 9 28 6 32 6C36 6 38 9 39.5 14.5C41 20 42 28 42 36C42 42 41 48 40.5 55" fill="__CLR__" opacity="0.5"/>'
+    +'<path d="M23.5 55C23 48 22 42 22 36C22 28 23 20 24.5 14.5C26 9 28 6 32 6C36 6 38 9 39.5 14.5C41 20 42 28 42 36C42 42 41 48 40.5 55" stroke="__CLR__" stroke-width="2.4" fill="none"/>'
+    +'<path d="M26.5 9C26 16 25.8 26 26 36C26.2 44 26.5 50 26.8 55" stroke="__CLR__" stroke-width="0.9" opacity="0.3" stroke-linecap="round"/>'
+    +'<path d="M32 7C32 14 32 26 32 36C32 44 32 50 32 55" stroke="__CLR__" stroke-width="0.9" opacity="0.3" stroke-linecap="round"/>'
+    +'<path d="M37.5 9C38 16 38.2 26 38 36C37.8 44 37.5 50 37.2 55" stroke="__CLR__" stroke-width="0.9" opacity="0.3" stroke-linecap="round"/>'
+    +'<path d="M25 14C24.5 22 24.5 32 25 42C25.3 48 25.5 52 25.8 55" stroke="white" stroke-width="2" opacity="0.1" stroke-linecap="round"/>'
+    +'<path d="M39.5 14C39.8 22 39.5 32 39 42" stroke="white" stroke-width="0.8" opacity="0.06" stroke-linecap="round"/>'
+    +'<path d="M22 35C22 35 18 35 14.5 33C11 31 9 26.5 9 22C9 17 11.5 15 13.5 16.5C15.5 18 16.5 21.5 16.5 26C16.5 30.5 17.5 33 22 35" fill="__CLR__" opacity="0.45"/>'
+    +'<path d="M22 35C22 35 18 35 14.5 33C11 31 9 26.5 9 22C9 17 11.5 15 13.5 16.5C15.5 18 16.5 21.5 16.5 26C16.5 30.5 17.5 33 22 35" stroke="__CLR__" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    +'<path d="M13.5 18.5C14 21 14.5 24 15.5 27.5" stroke="__CLR__" stroke-width="0.7" opacity="0.25" stroke-linecap="round"/>'
+    +'<path d="M14.5 18C14 20 14 23 14.5 25" stroke="white" stroke-width="0.8" opacity="0.08" stroke-linecap="round"/>'
+    +'<path d="M42 29C42 29 46 29 49.5 27C53 25 55 21 55 16.5C55 11.5 52.5 9.5 50.5 11C48.5 12.5 47.5 16 47.5 20.5C47.5 25 46.5 27 42 29" fill="__CLR__" opacity="0.45"/>'
+    +'<path d="M42 29C42 29 46 29 49.5 27C53 25 55 21 55 16.5C55 11.5 52.5 9.5 50.5 11C48.5 12.5 47.5 16 47.5 20.5C47.5 25 46.5 27 42 29" stroke="__CLR__" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    +'<path d="M50.5 13C50 15.5 49.5 18.5 48.5 22" stroke="__CLR__" stroke-width="0.7" opacity="0.25" stroke-linecap="round"/>'
+    +'<line x1="22" y1="18" x2="19.5" y2="16.5" stroke="__CLR__" stroke-width="1.3" stroke-linecap="round" opacity="0.65"/>'
+    +'<line x1="42" y1="16" x2="44.5" y2="14.5" stroke="__CLR__" stroke-width="1.3" stroke-linecap="round" opacity="0.65"/>'
+    +'<line x1="22" y1="28" x2="19.5" y2="28.5" stroke="__CLR__" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>'
+    +'<line x1="42" y1="35" x2="44.5" y2="35.5" stroke="__CLR__" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>'
+    +'<line x1="22.5" y1="42" x2="20" y2="43" stroke="__CLR__" stroke-width="1.1" stroke-linecap="round" opacity="0.48"/>'
+    +'<line x1="41.5" y1="43" x2="44" y2="44" stroke="__CLR__" stroke-width="1.1" stroke-linecap="round" opacity="0.48"/>'
+    +'<line x1="23" y1="50" x2="21" y2="51" stroke="__CLR__" stroke-width="1" stroke-linecap="round" opacity="0.4"/>'
+    +'<line x1="41" y1="49" x2="43" y2="50" stroke="__CLR__" stroke-width="1" stroke-linecap="round" opacity="0.4"/>'
+    +'<ellipse cx="32" cy="4.5" rx="6" ry="5" fill="#F4A7B9" opacity="0.92"/>'
+    +'<ellipse cx="27.5" cy="3.5" rx="4.2" ry="3.2" fill="#F4C0D0" opacity="0.82" transform="rotate(-18 27.5 3.5)"/>'
+    +'<ellipse cx="36.5" cy="3.5" rx="4.2" ry="3.2" fill="#F4C0D0" opacity="0.82" transform="rotate(18 36.5 3.5)"/>'
+    +'<ellipse cx="29" cy="1.5" rx="3" ry="2.2" fill="#F8D4E0" opacity="0.72" transform="rotate(-8 29 1.5)"/>'
+    +'<ellipse cx="35" cy="1.5" rx="3" ry="2.2" fill="#F8D4E0" opacity="0.72" transform="rotate(8 35 1.5)"/>'
+    +'<ellipse cx="32" cy="1" rx="2.2" ry="1.8" fill="#FBE4EC" opacity="0.6"/>'
+    +'<circle cx="32" cy="4.8" r="3" fill="#E8889E" opacity="0.88"/>'
+    +'<circle cx="32" cy="4.8" r="1.8" fill="#C96078" opacity="0.72"/>'
+    +'<circle cx="32" cy="4.8" r="0.8" fill="#A04058"/>'
+    +'<ellipse cx="30" cy="3.2" rx="1.2" ry="0.9" fill="white" opacity="0.35"/>'
+    +'<circle cx="26.5" cy="22" r="3" fill="#F4A7B9" opacity="0.15"/>'
+    +'<circle cx="37.5" cy="22" r="3" fill="#F4A7B9" opacity="0.15"/>'
+    +'</svg>',
+
+  Cerejeira: '<svg viewBox="0 0 64 64" fill="none">'
+    /* Vasinho fofo de bonsai */
+    +'<path d="M22 58C22 58 20 60 21.5 61.5C23 63 41 63 42.5 61.5C44 60 42 58 42 58" fill="#8B6B52" opacity="0.8"/>'
+    +'<path d="M20 58H44" stroke="#7A5840" stroke-width="2.5" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="58" rx="12" ry="2.5" fill="#A07E64" opacity="0.5"/>'
+    +'<path d="M25 60.5H39" stroke="#6B4E38" stroke-width="0.7" opacity="0.4" stroke-linecap="round"/>'
+    /* Terra/musgo no vaso */
+    +'<ellipse cx="32" cy="57" rx="10" ry="2" fill="#6BAF68" opacity="0.35"/>'
+    +'<circle cx="28" cy="57" r="1" fill="#7DB87A" opacity="0.4"/>'
+    +'<circle cx="35" cy="56.8" r="0.8" fill="#7DB87A" opacity="0.35"/>'
+    /* Tronco principal — curvado tipo bonsai */
+    +'<path d="M32 56C32 52 30 48 28 44C26 40 27 36 30 34C33 32 34 30 33 28" stroke="#6B4E38" stroke-width="4" stroke-linecap="round"/>'
+    +'<path d="M32 56C32 52 30 48 28 44C26 40 27 36 30 34C33 32 34 30 33 28" stroke="#8B6B52" stroke-width="2.5" stroke-linecap="round"/>'
+    /* Galho esquerdo */
+    +'<path d="M28 44C24 42 20 40 16 39C13 38.5 10 39 9 40" stroke="#7A5840" stroke-width="2.8" stroke-linecap="round"/>'
+    +'<path d="M28 44C24 42 20 40 16 39C13 38.5 10 39 9 40" stroke="#A07E64" stroke-width="1.5" stroke-linecap="round"/>'
+    /* Galho direito alto */
+    +'<path d="M30 36C34 34 38 32 42 30C45 28.5 48 28 50 29" stroke="#7A5840" stroke-width="2.5" stroke-linecap="round"/>'
+    +'<path d="M30 36C34 34 38 32 42 30C45 28.5 48 28 50 29" stroke="#A07E64" stroke-width="1.3" stroke-linecap="round"/>'
+    /* Galho topo */
+    +'<path d="M33 28C35 24 38 20 40 17C42 14 43 12 42 10" stroke="#7A5840" stroke-width="2.2" stroke-linecap="round"/>'
+    /* Galhinhos finos */
+    +'<path d="M16 39C14 37 12 35 10 34" stroke="#A07E64" stroke-width="1.4" stroke-linecap="round" opacity="0.8"/>'
+    +'<path d="M20 40.5C18 38 15 36 13 36" stroke="#A07E64" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>'
+    +'<path d="M50 29C52 27 54 25 55 24" stroke="#A07E64" stroke-width="1.4" stroke-linecap="round" opacity="0.8"/>'
+    +'<path d="M46 29.5C48 27 50 25.5 52 26" stroke="#A07E64" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>'
+    +'<path d="M42 10C44 8 46 7 47 6" stroke="#A07E64" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/>'
+    +'<path d="M40 12C38 10 36 8.5 35 7" stroke="#A07E64" stroke-width="1.3" stroke-linecap="round" opacity="0.7"/>'
+    +'<path d="M42 14C44 13 46 12 47 11" stroke="#A07E64" stroke-width="1.1" stroke-linecap="round" opacity="0.6"/>'
+    /* Copa esquerda — nuvem de flores */
+    +'<ellipse cx="11" cy="36" rx="6" ry="5" fill="__CLR__" opacity="0.88"/>'
+    +'<ellipse cx="16" cy="34" rx="5.5" ry="4.5" fill="__CLR__" opacity="0.85"/>'
+    +'<ellipse cx="8" cy="33" rx="5" ry="4.2" fill="__CLR__" opacity="0.8"/>'
+    +'<ellipse cx="13" cy="31" rx="4.5" ry="4" fill="__CLR__" opacity="0.82"/>'
+    +'<ellipse cx="18" cy="37" rx="4.5" ry="3.8" fill="__CLR__" opacity="0.78"/>'
+    +'<ellipse cx="6" cy="37" rx="4" ry="3.5" fill="__CLR__" opacity="0.72"/>'
+    +'<ellipse cx="10" cy="39.5" rx="4.5" ry="3.5" fill="__CLR__" opacity="0.7"/>'
+    /* Miolos esquerda */
+    +'<circle cx="12" cy="35" r="2.2" fill="#C95578" opacity="0.78"/>'
+    +'<circle cx="12" cy="35" r="1.1" fill="#A04060" opacity="0.58"/>'
+    +'<circle cx="8" cy="33.5" r="1.5" fill="#C95578" opacity="0.6"/>'
+    +'<circle cx="16" cy="33.5" r="1.5" fill="#C95578" opacity="0.55"/>'
+    /* Copa direita — nuvem de flores */
+    +'<ellipse cx="50" cy="26" rx="6" ry="5" fill="__CLR__" opacity="0.9"/>'
+    +'<ellipse cx="54" cy="24" rx="5.5" ry="4.5" fill="__CLR__" opacity="0.87"/>'
+    +'<ellipse cx="47" cy="23.5" rx="5" ry="4.2" fill="__CLR__" opacity="0.83"/>'
+    +'<ellipse cx="52" cy="28.5" rx="5" ry="4" fill="__CLR__" opacity="0.78"/>'
+    +'<ellipse cx="56" cy="27" rx="4.5" ry="3.8" fill="__CLR__" opacity="0.75"/>'
+    +'<ellipse cx="48" cy="28" rx="4.5" ry="3.5" fill="__CLR__" opacity="0.72"/>'
+    /* Miolos direita */
+    +'<circle cx="51" cy="26" r="2.4" fill="#C95578" opacity="0.8"/>'
+    +'<circle cx="51" cy="26" r="1.3" fill="#A04060" opacity="0.6"/>'
+    +'<circle cx="55" cy="24.5" r="1.6" fill="#C95578" opacity="0.6"/>'
+    +'<circle cx="48" cy="24" r="1.4" fill="#C95578" opacity="0.55"/>'
+    /* Copa topo — nuvem de flores */
+    +'<ellipse cx="42" cy="9" rx="5.5" ry="5" fill="__CLR__" opacity="0.92"/>'
+    +'<ellipse cx="38" cy="7" rx="5" ry="4.5" fill="__CLR__" opacity="0.88"/>'
+    +'<ellipse cx="45" cy="6.5" rx="4.8" ry="4" fill="__CLR__" opacity="0.85"/>'
+    +'<ellipse cx="40" cy="11.5" rx="4.5" ry="3.8" fill="__CLR__" opacity="0.8"/>'
+    +'<ellipse cx="35" cy="9" rx="4.2" ry="3.5" fill="__CLR__" opacity="0.78"/>'
+    +'<ellipse cx="46" cy="11" rx="4" ry="3.2" fill="__CLR__" opacity="0.73"/>'
+    +'<ellipse cx="36" cy="5" rx="3.8" ry="3.2" fill="__CLR__" opacity="0.75"/>'
+    +'<ellipse cx="48" cy="8" rx="3.5" ry="3" fill="__CLR__" opacity="0.7"/>'
+    /* Miolos topo */
+    +'<circle cx="41" cy="9" r="2.5" fill="#C95578" opacity="0.82"/>'
+    +'<circle cx="41" cy="9" r="1.3" fill="#A04060" opacity="0.62"/>'
+    +'<circle cx="37" cy="7" r="1.8" fill="#C95578" opacity="0.65"/>'
+    +'<circle cx="45" cy="7" r="1.6" fill="#C95578" opacity="0.58"/>'
+    +'<circle cx="35.5" cy="5.5" r="1.2" fill="#C95578" opacity="0.5"/>'
+    /* Petalas caindo (fofo, como neve de sakura) */
+    +'<ellipse cx="24" cy="22" rx="2" ry="1.3" fill="__CLR__" opacity="0.55" transform="rotate(-20 24 22)"/>'
+    +'<ellipse cx="56" cy="36" rx="1.8" ry="1.2" fill="__CLR__" opacity="0.48" transform="rotate(15 56 36)"/>'
+    +'<ellipse cx="20" cy="50" rx="1.7" ry="1.1" fill="__CLR__" opacity="0.42" transform="rotate(-30 20 50)"/>'
+    +'<ellipse cx="44" cy="42" rx="1.5" ry="1" fill="__CLR__" opacity="0.38" transform="rotate(25 44 42)"/>'
+    +'<ellipse cx="6" cy="48" rx="1.4" ry="0.9" fill="__CLR__" opacity="0.34" transform="rotate(-10 6 48)"/>'
+    +'<ellipse cx="52" cy="40" rx="1.3" ry="0.85" fill="__CLR__" opacity="0.3" transform="rotate(18 52 40)"/>'
+    +'<ellipse cx="26" cy="16" rx="1.5" ry="1" fill="__CLR__" opacity="0.4" transform="rotate(-8 26 16)"/>'
+    /* Highlights */
+    +'<ellipse cx="40" cy="7" rx="2" ry="1.5" fill="white" opacity="0.25"/>'
+    +'<ellipse cx="11" cy="33" rx="1.5" ry="1.2" fill="white" opacity="0.2"/>'
+    +'<ellipse cx="52" cy="23.5" rx="1.5" ry="1" fill="white" opacity="0.2"/>'
+    +'</svg>',
+
+  Lotus: '<svg viewBox="0 0 64 64" fill="none">'
+    /* ── Aura magica — glow suave ── */
+    +'<circle cx="32" cy="34" r="26" fill="__CLR__" opacity="0.07"/>'
+    +'<circle cx="32" cy="30" r="17" fill="__CLR__" opacity="0.09"/>'
+    /* ── Vasinho bowl — mesmo tamanho dos outros ── */
+    +'<path d="M20 58C20 58 22 62 26.5 63C31 64 33 64 37.5 63C42 62 44 58 44 58" fill="#D4A574"/>'
+    +'<path d="M20 58C20 58 22 62 26.5 63C31 64 33 64 37.5 63C42 62 44 58 44 58" stroke="#C4956A" stroke-width="1.2" fill="none"/>'
+    +'<path d="M18 58H46" stroke="#C4956A" stroke-width="1.8" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="58" rx="13" ry="1.8" fill="#EED8B8" opacity="0.6"/>'
+    /* Agua cristalina */
+    +'<ellipse cx="32" cy="57" rx="11" ry="3" fill="#D4EEF8" opacity="0.55"/>'
+    +'<ellipse cx="32" cy="56" rx="8" ry="1.5" fill="white" opacity="0.18"/>'
+    /* Lily pads */
+    +'<ellipse cx="25" cy="56" rx="4.5" ry="1.8" fill="#7EC47A" opacity="0.5"/>'
+    +'<path d="M25 56L25.5 54.5" stroke="#5EA05A" stroke-width="0.5" opacity="0.4"/>'
+    +'<ellipse cx="39" cy="55.5" rx="4" ry="1.6" fill="#7EC47A" opacity="0.42"/>'
+    /* ── Caule ── */
+    +'<path d="M32 54Q31 49 32 43" stroke="#6EAA68" stroke-width="1.8" stroke-linecap="round" opacity="0.55" fill="none"/>'
+    /* ══ PETALAS — roseta, fofas e arredondadas ══ */
+    /* Camada 1: petalas externas bem abertas */
+    +'<path d="M32 42Q20 44 13 39Q11 37 15 36Q22 36 32 40Z" fill="__CLR__" opacity="0.3"/>'
+    +'<path d="M32 42Q44 44 51 39Q53 37 49 36Q42 36 32 40Z" fill="__CLR__" opacity="0.3"/>'
+    +'<path d="M32 42Q18 38 14 31Q13 28 17 29Q24 31 32 39Z" fill="__CLR__" opacity="0.34"/>'
+    +'<path d="M32 42Q46 38 50 31Q51 28 47 29Q40 31 32 39Z" fill="__CLR__" opacity="0.34"/>'
+    +'<path d="M32 41Q24 42 19 46Q17 48 21 47Q26 45 32 42Z" fill="__CLR__" opacity="0.22"/>'
+    /* Camada 2: petalas medias */
+    +'<path d="M32 38Q22 36 18 29Q17 26 21 27Q26 29 32 36Z" fill="#E8CCE8" opacity="0.52"/>'
+    +'<path d="M32 38Q42 36 46 29Q47 26 43 27Q38 29 32 36Z" fill="#E8CCE8" opacity="0.52"/>'
+    +'<path d="M32 37Q23 33 20 26Q19.5 23 23.5 24.5Q27 27 32 34Z" fill="__CLR__" opacity="0.48"/>'
+    +'<path d="M32 37Q41 33 44 26Q44.5 23 40.5 24.5Q37 27 32 34Z" fill="__CLR__" opacity="0.48"/>'
+    /* Camada 3: petalas internas — calice */
+    +'<path d="M32 35Q26 30 24 22Q23.5 17 27 19Q30 23 32 33Z" fill="#EEE0F0" opacity="0.62"/>'
+    +'<path d="M32 35Q38 30 40 22Q40.5 17 37 19Q34 23 32 33Z" fill="#EEE0F0" opacity="0.62"/>'
+    +'<path d="M32 33Q28 28 27 20Q27 15 30 18Q31 22 32 31Z" fill="__CLR__" opacity="0.64"/>'
+    +'<path d="M32 33Q36 28 37 20Q37 15 34 18Q33 22 32 31Z" fill="__CLR__" opacity="0.64"/>'
+    /* Camada 4: petalas quase fechadas */
+    +'<path d="M32 30Q29.5 25 29.5 16Q29.5 10 32 13Q33 17 32 28Z" fill="#F4E8F4" opacity="0.72"/>'
+    +'<path d="M32 30Q34.5 25 34.5 16Q34.5 10 32 13Q31 17 32 28Z" fill="#F4E8F4" opacity="0.72"/>'
+    /* Petala central — ponta elegante */
+    +'<path d="M32 24Q31 18 31.2 11Q31.5 7 32 5Q32.5 7 32.8 11Q33 18 32 24Z" fill="__CLR__" opacity="0.85"/>'
+    +'<path d="M32 22Q31.4 17 31.6 11Q31.8 8 32 7Q32.2 8 32.4 11Q32.6 17 32 22Z" fill="white" opacity="0.22"/>'
+    /* ── Centro dourado ── */
+    +'<ellipse cx="32" cy="38" rx="5" ry="3.5" fill="#FFE082" opacity="0.95"/>'
+    +'<ellipse cx="32" cy="38" rx="3.5" ry="2.4" fill="#FFC837" opacity="0.85"/>'
+    +'<ellipse cx="32" cy="37.5" rx="2.2" ry="1.5" fill="#FFB300" opacity="0.6"/>'
+    /* Sementes */
+    +'<circle cx="31" cy="37.3" r="0.7" fill="#E6960A" opacity="0.55"/>'
+    +'<circle cx="33" cy="37.3" r="0.7" fill="#E6960A" opacity="0.55"/>'
+    +'<circle cx="32" cy="36.2" r="0.7" fill="#E6960A" opacity="0.5"/>'
+    +'<circle cx="30" cy="38.3" r="0.55" fill="#E6960A" opacity="0.4"/>'
+    +'<circle cx="34" cy="38.3" r="0.55" fill="#E6960A" opacity="0.4"/>'
+    /* ── Brilhos e sparkles ── */
+    +'<path d="M30 11Q30.5 9 31 7" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.3" fill="none"/>'
+    +'<path d="M26 22Q27 20 27.5 18" stroke="white" stroke-width="0.6" stroke-linecap="round" opacity="0.22" fill="none"/>'
+    +'<path d="M38 22Q37 20 36.5 18" stroke="white" stroke-width="0.6" stroke-linecap="round" opacity="0.22" fill="none"/>'
+    +'<ellipse cx="30.5" cy="37" rx="1.3" ry="0.8" fill="white" opacity="0.3"/>'
+    /* Sparkles */
+    +'<circle cx="11" cy="20" r="1.1" fill="white" opacity="0.5"/>'
+    +'<circle cx="11" cy="20" r="0.45" fill="white" opacity="0.85"/>'
+    +'<circle cx="53" cy="18" r="0.9" fill="white" opacity="0.42"/>'
+    +'<circle cx="53" cy="18" r="0.38" fill="white" opacity="0.78"/>'
+    +'<circle cx="8" cy="40" r="0.8" fill="white" opacity="0.36"/>'
+    +'<circle cx="8" cy="40" r="0.33" fill="white" opacity="0.72"/>'
+    +'<circle cx="55" cy="42" r="0.95" fill="white" opacity="0.4"/>'
+    +'<circle cx="55" cy="42" r="0.4" fill="white" opacity="0.74"/>'
+    +'<circle cx="18" cy="8" r="0.7" fill="white" opacity="0.34"/>'
+    +'<circle cx="47" cy="7" r="0.75" fill="white" opacity="0.38"/>'
+    /* Gotinhas de orvalho */
+    +'<circle cx="22" cy="28" r="1.4" fill="white" opacity="0.32"/>'
+    +'<circle cx="22" cy="28" r="0.6" fill="white" opacity="0.62"/>'
+    +'<circle cx="42" cy="26" r="1.2" fill="white" opacity="0.27"/>'
+    +'<circle cx="42" cy="26" r="0.5" fill="white" opacity="0.57"/>'
+    +'</svg>'
+};
+
+function updatePlantSVGs(s){
+  var svg = plantSVGs[s.plant];
+  if(!svg) return;
+  var rendered = svg.replace(/__CLR__/g, s.color);
+  var aEl = document.getElementById('apemoji');
+  var iosEl = document.getElementById('iospemoji');
+  if(aEl) aEl.innerHTML = rendered;
+  if(iosEl) iosEl.innerHTML = rendered;
+}
+
+function restartAnims() {
+  document.querySelectorAll('[data-target]').forEach(function(el){el._counted=false;});
+  var els=document.querySelectorAll('.anim-el');
+  els.forEach(function(el){el.classList.add('reinit');void el.offsetWidth;});
+  setTimeout(function(){els.forEach(function(el){el.classList.remove('reinit');});},30);
+  carIdx=0;goToSlide(0);startCarTimer();
+  setTimeout(initCounters,2800);
+}
+
+function setState(key,btn){
+  var s=states[key];
+  document.querySelectorAll('.state-btn').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  document.documentElement.style.setProperty('--plant-color',s.color);
+  document.documentElement.style.setProperty('--plant-color-rgb',s.rgb);
+  updatePlantSVGs(s);
+  document.getElementById('aplabel').textContent=s.plant;
+  document.getElementById('iosplabel').textContent=s.plant;
+  document.getElementById('aname').textContent=s.name;
+  document.getElementById('iosname').textContent=s.name;
+  document.getElementById('apsub').textContent=s.plant;
+  document.getElementById('iospsub').textContent=s.plant;
+  document.getElementById('apfeat').textContent=s.plant;
+  document.getElementById('iospfeat').textContent=s.plant;
+  document.querySelectorAll('.netw').forEach(function(el){el.textContent=s.net;});
+  restartAnims();
+}
+
+function selectPlan(plan){
+  ['a','ios'].forEach(function(p){
+    ['monthly','annual'].forEach(function(t){
+      var el=document.getElementById(p+'plan-'+t);
+      if(el)el.classList.toggle('sel',plan===t);
+    });
+  });
+}
+
+function animateCounter(el){
+  if(el._counted)return;el._counted=true;
+  var target=parseFloat(el.dataset.target);
+  var suffix=el.dataset.suffix||'';
+  var start=performance.now(),dur=1200;
+  function tick(now){
+    var p=Math.min((now-start)/dur,1);
+    var eased=1-Math.pow(1-p,3);
+    el.textContent=Math.round(eased*target)+suffix;
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function initCounters(){
+  document.querySelectorAll('[data-target]').forEach(function(el){animateCounter(el);});
+}
+
+/* Carousel */
+var carIdx=0,carTotal=5;
+var carDefs=[
+  {track:'attrack',dots:'atdots'},
+  {track:'iosttrack',dots:'iostdots'}
+];
+function goToSlide(idx){
+  carDefs.forEach(function(c){
+    var track=document.getElementById(c.track);
+    var dots=document.getElementById(c.dots);
+    if(track)track.style.transform='translateX(-'+(idx*20)+'%)';
+    if(dots)dots.querySelectorAll('.tdot').forEach(function(d,i){d.classList.toggle('act',i===idx);});
+  });
+}
+var carTimer;
+function startCarTimer(){clearInterval(carTimer);carTimer=setInterval(function(){carIdx=(carIdx+1)%carTotal;goToSlide(carIdx);},3500);}
+
+/* Touch swipe */
+function initSwipe(){
+  ['atcar','iostcar'].forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;
+    var sx=0;
+    el.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;},{passive:true});
+    el.addEventListener('touchend',function(e){
+      var dx=e.changedTouches[0].clientX-sx;
+      if(Math.abs(dx)>40){
+        if(dx<0&&carIdx<carTotal-1)carIdx++;
+        else if(dx>0&&carIdx>0)carIdx--;
+        goToSlide(carIdx);startCarTimer();
+      }
+    },{passive:true});
+  });
+}
+
+// CTA tap — visual feedback (prototype only)
+function ctaTap(btn){
+  btn.style.transform='scale(0.95)';
+  btn.style.opacity='0.7';
+  btn.textContent='Ativando...';
+  setTimeout(function(){
+    btn.style.transform='scale(1.02)';
+    btn.style.opacity='1';
+    btn.textContent='Pronto! Bem-vinda \u2728';
+    btn.style.pointerEvents='none';
+  },1200);
+}
+
+// Init
+setState('s1',document.querySelectorAll('.state-btn')[0]);
+selectPlan('monthly');
+startCarTimer();
+initSwipe();
+setTimeout(initCounters,2800);
+</script>
+</body>
+</html>

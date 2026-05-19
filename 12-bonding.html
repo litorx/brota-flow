@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brota — Screen 12: Bonding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --brand-real: #F4A7B9;
+  --brand-ai:   #A8D5A2;
+  --plant-color: #C4B0E0;
+  --plant-glow: rgba(196,176,224,0.35);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: #FFF8F2; color: #3D2C2E;
+  transition: background 0.6s ease, color 0.6s ease; overflow-x: hidden;
+}
+body.dark { background: #1A1418; color: #E4E0DE; }
+
+/* STUDIO */
+.studio-header { position: relative; z-index: 10; padding: 32px 48px 16px; display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+.brand-block { max-width: 640px; }
+.brand-eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; color: #C4B5B7; margin-bottom: 10px; }
+.brand-title { font-family: 'Instrument Serif', serif; font-style: italic; font-size: clamp(28px, 3.4vw, 44px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 12px; }
+.brand-title em { font-style: normal; font-family: 'Nunito', sans-serif; font-weight: 300; font-size: 0.65em; vertical-align: 0.1em; color: #C4B5B7; }
+.brand-sub { font-size: 14px; line-height: 1.6; color: #9B8A8C; max-width: 600px; }
+.controls-col { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.theme-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(61,44,46,0.12); background: transparent; color: inherit; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; opacity: 0.7; transition: opacity 0.2s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.theme-toggle:hover { opacity: 1; transform: scale(1.03); }
+.theme-toggle .dot { width: 14px; height: 14px; border-radius: 50%; background: currentColor; transition: transform 0.45s ease; }
+body.dark .theme-toggle .dot { transform: rotate(180deg); }
+.state-toggle { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.state-btn { background: transparent; border: 1px solid rgba(61,44,46,0.12); color: inherit; font: inherit; font-size: 12px; font-weight: 500; padding: 7px 14px; border-radius: 999px; cursor: pointer; opacity: 0.5; transition: all 0.25s ease; }
+.state-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.state-btn.active { background: var(--brand-real); color: white; opacity: 1; border-color: var(--brand-real); }
+
+/* STAGE */
+.stage { position: relative; z-index: 1; padding: 24px 24px 80px; display: flex; align-items: flex-start; justify-content: center; gap: 56px; flex-wrap: wrap; }
+.phone-wrapper { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.phone-label { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+.pill.android { background: linear-gradient(135deg, #34A853, #4285F4); color: white; }
+.pill.ios { background: linear-gradient(135deg, #1C1C1E, #48484A); color: white; }
+.phone-label .desc { font-size: 12px; color: #C4B5B7; max-width: 280px; line-height: 1.4; }
+.phone { width: 380px; height: 800px; border-radius: 56px; background: #1A1A1A; padding: 14px; flex-shrink: 0; box-shadow: 0 60px 100px -20px rgba(0,0,0,0.18), 0 30px 60px -30px rgba(0,0,0,0.10), inset 0 0 0 2px rgba(255,255,255,0.05), inset 0 0 0 4px #1A1A1A; }
+body.dark .phone { box-shadow: 0 60px 100px -20px rgba(0,0,0,0.7), 0 30px 60px -30px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(255,255,255,0.08); }
+.phone-screen { width: 100%; height: 100%; border-radius: 42px; overflow: hidden; position: relative; background: #FFF8F2; }
+.status-bar { position: absolute; top: 0; left: 0; right: 0; height: 50px; padding: 16px 28px 0; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600; z-index: 100; pointer-events: none; color: #9B8A8C; }
+.status-bar .icons { display: flex; gap: 6px; align-items: center; }
+.status-bar svg { width: 16px; height: 16px; }
+.dynamic-island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 36px; background: #000; border-radius: 999px; z-index: 200; }
+.screen { width: 100%; height: 100%; position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; }
+
+/* KEYFRAMES */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes drawPath {
+  from { stroke-dashoffset: var(--path-len, 200); opacity: 0; }
+  5%   { opacity: 1; }
+  to   { stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes growIn {
+  from { transform: scale(0); opacity: 0; }
+  65%  { transform: scale(1.12); opacity: 1; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes bloomIn {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.18); opacity: 0.9; }
+  100% { transform: scale(1); opacity: var(--op, 0.7); }
+}
+@keyframes breathe {
+  0%,100% { transform: scale(1) translateY(0); }
+  50%      { transform: scale(1.02) translateY(-2px); }
+}
+@keyframes swayGentle {
+  0%,100% { transform: rotate(0deg); }
+  25%     { transform: rotate(1.5deg); }
+  75%     { transform: rotate(-1.5deg); }
+}
+@keyframes petalDrift {
+  0%   { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+  20%  { opacity: 0.5; }
+  100% { opacity: 0; transform: translate(var(--dx, -15px), var(--dy, 30px)) rotate(var(--dr, 60deg)); }
+}
+@keyframes glowPulse {
+  0%,100% { opacity: 0.06; transform: scale(1); }
+  50%     { opacity: 0.16; transform: scale(1.06); }
+}
+@keyframes ctaIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes aBlob1 { 0%,100% { border-radius: 56% 44% 50% 50%; transform: rotate(0deg) scale(1); } 33% { border-radius: 44% 56% 62% 38%; transform: rotate(-6deg) scale(1.06); } 66% { border-radius: 62% 38% 44% 56%; transform: rotate(3deg) scale(0.97); } }
+@keyframes aBlob2 { 0%,100% { border-radius: 44% 56% 40% 60%; } 50% { border-radius: 62% 38% 52% 48%; transform: rotate(8deg) scale(1.08); } }
+@keyframes orbPulse { 0%,100% { opacity: 0.06; transform: scale(1); } 50% { opacity: 0.10; transform: scale(1.08); } }
+
+/* Shared plant styling */
+.plant-container { width: 140px; height: 220px; position: relative; margin-bottom: 20px; }
+.plant-container svg { overflow: visible; width: 100%; height: 100%; }
+.plant-group { transform-origin: 50% 100%; animation: breathe 5s ease-in-out 3.4s infinite, swayGentle 7s ease-in-out 3.4s infinite; }
+
+/* Draw animation classes */
+.draw { stroke-dasharray: var(--path-len, 200); stroke-dashoffset: var(--path-len, 200); animation: drawPath var(--dur, 1s) cubic-bezier(0.34, 1.2, 0.64, 1) var(--del, 0.4s) forwards; }
+.grow { opacity: 0; transform: scale(0); transform-origin: var(--origin, center center); animation: growIn var(--dur, 0.5s) cubic-bezier(0.34, 1.56, 0.64, 1) var(--del, 1s) forwards; }
+.bloom { opacity: 0; transform: scale(0); animation: bloomIn var(--dur, 0.45s) cubic-bezier(0.34, 1.56, 0.64, 1) var(--del, 2s) forwards; transform-origin: var(--origin, center center); }
+.drift { opacity: 0; animation: petalDrift var(--dur, 3s) ease-out var(--del, 2.5s) forwards; }
+
+/* iOS uses gentler bezier */
+.ios-screen .draw { animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1); }
+.ios-screen .grow { animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1); }
+.ios-screen .bloom { animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1); }
+.ios-screen .plant-group { animation: breathe 5.5s ease-in-out 3.4s infinite, swayGentle 8s ease-in-out 3.4s infinite; }
+
+/* ANDROID */
+.android-screen { background: #FFF8F2; color: #3D2C2E; }
+.a-blob-1 { position: absolute; z-index: 0; pointer-events: none; width: 500px; height: 500px; background: var(--plant-color); opacity: 0.07; filter: blur(110px); border-radius: 56% 44% 50% 50%; top: -220px; left: -200px; animation: aBlob1 22s ease-in-out infinite; transition: background 0.8s ease; }
+.a-blob-2 { position: absolute; z-index: 0; pointer-events: none; width: 380px; height: 380px; background: var(--brand-real); opacity: 0.05; filter: blur(90px); border-radius: 44% 56% 40% 60%; bottom: -160px; right: -120px; animation: aBlob2 28s ease-in-out infinite; }
+.plant-aura { width: 160px; height: 160px; border-radius: 50%; background: var(--plant-color); filter: blur(60px); position: absolute; opacity: 0; top: 32%; left: 50%; transform: translate(-50%, -50%); animation: fadeUp 1.2s ease-out 0.4s forwards, glowPulse 4s ease-in-out 3.4s infinite; transition: background 0.8s ease; pointer-events: none; z-index: 0; }
+
+.a-body {
+  position: relative; z-index: 2; flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 68px 24px 108px;
+}
+.a-conn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 400; color: var(--brand-real); margin-bottom: 10px;
+  opacity: 0; animation: fadeUp 0.55s ease-out 3.10s forwards;
+}
+.a-h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 28px; font-weight: 700; line-height: 1.18; letter-spacing: -0.02em;
+  color: #3D2C2E; margin-bottom: 24px;
+}
+.a-h1-l1 { display: block; opacity: 0; animation: fadeUp 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 3.50s forwards; }
+.a-h1-l2 { display: block; opacity: 0; animation: fadeUp 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 3.70s forwards; }
+.a-input-wrap {
+  width: 100%; position: relative;
+  opacity: 0; animation: fadeUp 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 4.10s forwards;
+}
+.a-input {
+  width: 100%; padding: 16px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(61,44,46,0.10);
+  background: rgba(255,255,255,0.90);
+  color: #3D2C2E;
+  font-family: 'Nunito', sans-serif;
+  font-size: 17px; font-weight: 400; text-align: center;
+  outline: none; caret-color: var(--plant-color);
+  transition: border-color 0.25s ease, background 0.25s;
+}
+.a-input::placeholder { color: #C4B5B7; }
+.a-input:focus { border-color: var(--plant-color); background: #FFFFFF; }
+.a-cta {
+  position: absolute; bottom: 32px; left: 24px; right: 24px;
+  padding: 17px 32px; border-radius: 999px; border: none;
+  background: var(--plant-color); box-shadow: 0 6px 32px var(--plant-glow);
+  color: #FFFFFF;
+  font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 600;
+  cursor: pointer; text-align: center;
+  transition: all 350ms cubic-bezier(0.34, 1.56, 0.64, 1), background 0.6s, box-shadow 0.6s;
+  opacity: 0; transform: translateY(10px) scale(0.97); pointer-events: none;
+}
+.a-cta.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; animation: ctaIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.a-cta:hover { transform: scale(1.02); filter: brightness(1.08); }
+.a-cta:active { transform: scale(0.97); }
+
+/* iOS */
+.ios-screen { background: #FFF8F2; color: #3D2C2E; }
+.ios-orb { position: absolute; z-index: 0; pointer-events: none; border-radius: 50%; transition: background 0.8s ease; }
+.ios-orb.a { background: var(--plant-color); width: 440px; height: 440px; top: -170px; right: -140px; opacity: 0.07; filter: blur(88px); animation: orbPulse 9s ease-in-out infinite; }
+.ios-orb.b { background: var(--brand-real); width: 300px; height: 300px; bottom: -120px; left: -100px; opacity: 0.05; filter: blur(74px); animation: orbPulse 12s ease-in-out 3s infinite; }
+
+.ios-body {
+  position: relative; z-index: 2; flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 60px 24px 108px;
+}
+.ios-conn {
+  font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 13px; font-weight: 400; letter-spacing: -0.1px;
+  color: var(--brand-real); margin-bottom: 10px;
+  opacity: 0; animation: fadeUp 0.50s cubic-bezier(0.32, 0.72, 0, 1) 3.10s forwards;
+}
+.ios-h1 {
+  font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 28px; font-weight: 700; line-height: 1.18; letter-spacing: -0.6px;
+  color: #3D2C2E; margin-bottom: 24px;
+}
+.ios-h1-l1 { display: block; opacity: 0; animation: fadeUp 0.58s cubic-bezier(0.32, 0.72, 0, 1) 3.50s forwards; }
+.ios-h1-l2 { display: block; opacity: 0; animation: fadeUp 0.58s cubic-bezier(0.32, 0.72, 0, 1) 3.70s forwards; }
+.ios-input-wrap {
+  width: 100%; position: relative;
+  opacity: 0; animation: fadeUp 0.50s cubic-bezier(0.32, 0.72, 0, 1) 4.10s forwards;
+}
+.ios-input {
+  width: 100%; padding: 15px 18px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.60);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(61,44,46,0.10);
+  color: #3D2C2E;
+  font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 17px; font-weight: 400; letter-spacing: -0.25px;
+  text-align: center; outline: none; caret-color: var(--plant-color);
+  transition: border-color 0.25s ease, background 0.25s;
+}
+.ios-input::placeholder { color: #C4B5B7; }
+.ios-input:focus { border-color: var(--plant-color); background: rgba(255,255,255,0.80); }
+.ios-cta {
+  position: absolute; bottom: 32px; left: 24px; right: 24px;
+  padding: 17px 32px; border-radius: 999px; border: none;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: rgba(196,176,224,0.82);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.10), 0 4px 28px var(--plant-glow);
+  color: #FFFFFF;
+  font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 17px; font-weight: 600; letter-spacing: -0.25px;
+  cursor: pointer; text-align: center;
+  transition: all 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  opacity: 0; transform: translateY(10px) scale(0.97); pointer-events: none;
+}
+.ios-cta.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; animation: ctaIn 0.42s cubic-bezier(0.32, 0.72, 0, 1) both; }
+.ios-cta:hover { transform: scale(1.01); filter: brightness(1.06); }
+.ios-cta:active { transform: scale(0.97); }
+
+/* ANNOTATIONS */
+.annotations { max-width: 1280px; margin: 0 auto; padding: 0 48px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px 48px; }
+.note { padding: 22px; border-radius: 18px; background: rgba(61,44,46,0.04); }
+body.dark .note { background: rgba(255,255,255,0.06); }
+.note h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: #9B8A8C; margin-bottom: 14px; font-weight: 700; }
+.note ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.note li { font-size: 13px; line-height: 1.55; color: #9B8A8C; padding-left: 16px; position: relative; }
+.note li::before { content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; }
+.note.android li::before { background: #34A853; }
+.note.ios li::before { background: #636366; }
+.note li code { font-family: monospace; font-size: 11px; background: rgba(61,44,46,0.06); padding: 1px 5px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+
+<header class="studio-header">
+  <div class="brand-block">
+    <div class="brand-eyebrow">Brota &middot; Onboarding &middot; Screen 13 de 19 &middot; O13-Bonding</div>
+    <h1 class="brand-title">Como voce quer me chamar? <em>bloom botanico por arquetipo &middot; input de nome &middot; CTA ao vivo</em></h1>
+    <p class="brand-sub">
+      A planta floresce no formato do seu arquetipo e pede um nome. Cada arquetipo tem sua ilustracao botanica propria.
+      Mesma animacao SVG em ambas plataformas. CTA aparece ao digitar.
+    </p>
+  </div>
+  <div class="controls-col">
+    <button class="theme-toggle" onclick="document.body.classList.toggle('dark')" aria-label="Toggle tema"><span class="dot"></span> Tema</button>
+    <div class="state-toggle" role="tablist">
+      <button class="state-btn active" data-s="s1" onclick="setState('s1')" role="tab"><span>Lavanda</span></button>
+      <button class="state-btn" data-s="s2" onclick="setState('s2')" role="tab"><span>Girassol</span></button>
+      <button class="state-btn" data-s="s3" onclick="setState('s3')" role="tab"><span>Cacto</span></button>
+      <button class="state-btn" data-s="s4" onclick="setState('s4')" role="tab"><span>Cerejeira</span></button>
+      <button class="state-btn" data-s="s5" onclick="setState('s5')" role="tab"><span>Lotus</span></button>
+    </div>
+  </div>
+</header>
+
+<section class="stage">
+
+  <!-- ANDROID -->
+  <div class="phone-wrapper">
+    <div class="phone-label">
+      <span class="pill android">Android &middot; M3 Expressive</span>
+      <span class="desc">Planta botanica SVG por arquetipo. Bloom animado com spring M3E. TextField Outlined.</span>
+    </div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 8.5C5.5 4.5 18.5 4.5 22.5 8.5L20.5 10.5C17.5 7.5 6.5 7.5 3.5 10.5L1.5 8.5ZM5.5 12.5C8.5 9.5 15.5 9.5 18.5 12.5L16.5 14.5C14.5 12.5 9.5 12.5 7.5 14.5L5.5 12.5ZM9.5 16.5C11 15 13 15 14.5 16.5L12 19L9.5 16.5Z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="8" width="18" height="8" rx="2"/><rect x="20" y="10" width="2" height="4" rx="1"/></svg>
+          </span>
+        </div>
+        <div class="screen android-screen" id="a-screen">
+          <div class="a-blob-1"></div>
+          <div class="a-blob-2"></div>
+          <div class="plant-aura" id="a-aura"></div>
+          <div class="a-body">
+            <div class="plant-container" id="a-plant"></div>
+            <p class="a-conn" id="a-conn">Quando voce abrir as redes, ela vai estar la. Da um nome pra ela.</p>
+            <h1 class="a-h1">
+              <span class="a-h1-l1">Como voce quer</span>
+              <span class="a-h1-l2">me chamar?</span>
+            </h1>
+            <div class="a-input-wrap">
+              <input class="a-input" id="a-input" type="text" placeholder="Nome da sua planta" autocomplete="off" oninput="onName('a', this.value)"/>
+            </div>
+          </div>
+          <button class="a-cta" id="a-cta">Oi!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- iOS -->
+  <div class="phone-wrapper">
+    <div class="phone-label">
+      <span class="pill ios">iOS 26+ &middot; Liquid Glass / HIG</span>
+      <span class="desc">Mesma animacao SVG botanica. Bezier HIG. TextField regularMaterial.</span>
+    </div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="dynamic-island"></div>
+        <div class="screen ios-screen" id="ios-screen">
+          <div class="ios-orb a"></div>
+          <div class="ios-orb b"></div>
+          <div class="plant-aura" id="ios-aura"></div>
+          <div class="ios-body">
+            <div class="plant-container" id="ios-plant"></div>
+            <p class="ios-conn" id="ios-conn">Quando voce abrir as redes, ela vai estar la. Da um nome pra ela.</p>
+            <h1 class="ios-h1">
+              <span class="ios-h1-l1">Como voce quer</span>
+              <span class="ios-h1-l2">me chamar?</span>
+            </h1>
+            <div class="ios-input-wrap">
+              <input class="ios-input" id="ios-input" type="text" placeholder="Nome da sua planta" autocomplete="off" oninput="onName('ios', this.value)"/>
+            </div>
+          </div>
+          <button class="ios-cta" id="ios-cta">Oi!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section class="annotations">
+  <div class="note android">
+    <h4>Android &middot; M3 Expressive</h4>
+    <ul>
+      <li>5 arquetipos: <strong>Lavanda</strong> (3 espigas), <strong>Girassol</strong> (petalas radiadas), <strong>Cacto</strong> (saguaro), <strong>Cerejeira</strong> (galho com flores), <strong>Lotus</strong> (flor abrindo na agua).</li>
+      <li>Coreografia: <code>drawPath</code> (caules) &rarr; <code>growIn</code> (folhas) &rarr; <code>bloomIn</code> (flores) com stagger temporal.</li>
+      <li>Respiracao: <code>breathe 5s + swayGentle 7s</code>. Transform-origin: 50% 100%.</li>
+    </ul>
+  </div>
+  <div class="note ios">
+    <h4>iOS 26+ &middot; Liquid Glass / HIG</h4>
+    <ul>
+      <li>Mesma animacao SVG botanica — identica ao Android. Bezier HIG <code>cubic-bezier(0.32, 0.72, 0, 1)</code> aplicada automaticamente.</li>
+      <li>CTA Liquid Glass: <code>backdrop-filter: blur(24px) saturate(180%)</code> + specular inset.</li>
+    </ul>
+  </div>
+</section>
+
+<script>
+/* Plant SVGs — all 5 archetypes */
+var plantSVGs = {
+
+  lavanda: '<svg viewBox="0 0 140 220" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    +'<g class="plant-group">'
+    /* vasinho */
+    +'<path class="grow" d="M48 200C48 200 44 210 47 213C50 216 90 216 93 213C96 210 92 200 92 200" fill="#D4A574" opacity="0.85" style="--del:0.1s;--dur:0.5s;--origin:70px 210px"/>'
+    +'<path class="draw" d="M44 200H96" stroke="#B8885A" stroke-width="2.8" stroke-linecap="round" style="--path-len:52;--dur:0.4s;--del:0.1s"/>'
+    +'<ellipse class="grow" cx="70" cy="199" rx="24" ry="4" fill="#6BAF68" opacity="0.3" style="--del:0.3s;--dur:0.4s;--origin:70px 199px"/>'
+    /* caule central */
+    +'<path class="draw" d="M70 198V75" stroke="#5C8F58" stroke-width="2.8" stroke-linecap="round" style="--path-len:123;--dur:1.1s;--del:0.3s"/>'
+    /* caule esquerdo */
+    +'<path class="draw" d="M70 165C62 155 52 145 48 105" stroke="#6BA068" stroke-width="2.2" stroke-linecap="round" style="--path-len:80;--dur:0.9s;--del:0.6s"/>'
+    /* caule direito */
+    +'<path class="draw" d="M70 155C78 145 88 135 92 100" stroke="#6BA068" stroke-width="2.2" stroke-linecap="round" style="--path-len:75;--dur:0.9s;--del:0.7s"/>'
+    /* folhas organicas */
+    +'<path class="grow" d="M70 185C62 181 52 183 50 189C48 194 55 197 70 191Z" fill="#7DB87A" opacity="0.5" style="--del:1.0s;--dur:0.5s;--origin:70px 185px"/>'
+    +'<path class="grow" d="M70 178C78 174 88 176 90 182C92 187 85 190 70 184Z" fill="#7DB87A" opacity="0.45" style="--del:1.15s;--dur:0.5s;--origin:70px 178px"/>'
+    +'<path class="grow" d="M60 155C52 151 42 153 40 159C38 164 46 167 60 161Z" fill="#7DB87A" opacity="0.4" style="--del:1.3s;--dur:0.45s;--origin:60px 155px"/>'
+    +'<path class="grow" d="M80 148C88 144 98 146 100 152C102 157 94 160 80 154Z" fill="#7DB87A" opacity="0.4" style="--del:1.4s;--dur:0.45s;--origin:80px 148px"/>'
+    /* espiga central */
+    +'<ellipse class="bloom" cx="70" cy="72" rx="5.5" ry="8" fill="#C4B0E0" style="--del:1.7s;--origin:70px 80px;--op:0.55"/>'
+    +'<ellipse class="bloom" cx="70" cy="62" rx="5" ry="7.5" fill="#B49ED8" style="--del:1.85s;--origin:70px 70px;--op:0.65"/>'
+    +'<ellipse class="bloom" cx="70" cy="52" rx="4.5" ry="7" fill="#C4B0E0" style="--del:2.0s;--origin:70px 59px;--op:0.6"/>'
+    +'<ellipse class="bloom" cx="70" cy="43" rx="4" ry="6" fill="#D4C4E8" style="--del:2.15s;--origin:70px 49px;--op:0.55"/>'
+    +'<ellipse class="bloom" cx="69" cy="35" rx="3.2" ry="4.5" fill="#D4C4E8" style="--del:2.3s;--origin:69px 40px;--op:0.45"/>'
+    +'<ellipse class="bloom" cx="69" cy="28" rx="2.4" ry="3.2" fill="#D4C4E8" style="--del:2.42s;--origin:69px 32px;--op:0.38"/>'
+    /* espiga esquerda */
+    +'<ellipse class="bloom" cx="47" cy="100" rx="4.8" ry="6.5" fill="#C4B0E0" style="--del:1.8s;--origin:47px 107px;--op:0.5"/>'
+    +'<ellipse class="bloom" cx="46" cy="90" rx="4.2" ry="6" fill="#B49ED8" style="--del:1.95s;--origin:46px 96px;--op:0.55"/>'
+    +'<ellipse class="bloom" cx="45" cy="81" rx="3.6" ry="5.2" fill="#D4C4E8" style="--del:2.1s;--origin:45px 86px;--op:0.48"/>'
+    +'<ellipse class="bloom" cx="45" cy="73" rx="3" ry="4.2" fill="#D4C4E8" style="--del:2.25s;--origin:45px 77px;--op:0.4"/>'
+    +'<ellipse class="bloom" cx="45" cy="66" rx="2.4" ry="3.4" fill="#D4C4E8" style="--del:2.38s;--origin:45px 70px;--op:0.34"/>'
+    /* espiga direita */
+    +'<ellipse class="bloom" cx="93" cy="96" rx="4.8" ry="6.5" fill="#C4B0E0" style="--del:1.9s;--origin:93px 103px;--op:0.5"/>'
+    +'<ellipse class="bloom" cx="93" cy="86" rx="4.2" ry="6" fill="#B49ED8" style="--del:2.05s;--origin:93px 92px;--op:0.55"/>'
+    +'<ellipse class="bloom" cx="93" cy="77" rx="3.6" ry="5.2" fill="#D4C4E8" style="--del:2.2s;--origin:93px 82px;--op:0.48"/>'
+    +'<ellipse class="bloom" cx="93" cy="69" rx="3" ry="4.2" fill="#D4C4E8" style="--del:2.35s;--origin:93px 73px;--op:0.4"/>'
+    +'<ellipse class="bloom" cx="93" cy="62" rx="2.4" ry="3.4" fill="#D4C4E8" style="--del:2.45s;--origin:93px 66px;--op:0.34"/>'
+    +'</g></svg>',
+
+  girassol: '<svg viewBox="0 0 140 220" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    +'<g class="plant-group">'
+    /* vasinho */
+    +'<path class="grow" d="M48 200C48 200 44 210 47 213C50 216 90 216 93 213C96 210 92 200 92 200" fill="#D4A574" opacity="0.85" style="--del:0.1s;--dur:0.5s;--origin:70px 210px"/>'
+    +'<path class="draw" d="M44 200H96" stroke="#B8885A" stroke-width="2.8" stroke-linecap="round" style="--path-len:52;--dur:0.4s;--del:0.1s"/>'
+    +'<ellipse class="grow" cx="70" cy="199" rx="24" ry="4" fill="#6BAF68" opacity="0.3" style="--del:0.3s;--dur:0.4s;--origin:70px 199px"/>'
+    /* caule */
+    +'<path class="draw" d="M70 198V90" stroke="#5A9E54" stroke-width="3.5" stroke-linecap="round" style="--path-len:108;--dur:1.1s;--del:0.3s"/>'
+    /* folhas */
+    +'<path class="grow" d="M70 175C56 167 38 171 35 181C33 188 44 192 70 183Z" fill="#7DB87A" opacity="0.48" style="--del:1.0s;--dur:0.5s;--origin:70px 175px"/>'
+    +'<path class="grow" d="M70 168C84 160 102 164 105 174C107 181 96 185 70 176Z" fill="#7DB87A" opacity="0.42" style="--del:1.15s;--dur:0.5s;--origin:70px 168px"/>'
+    +'<path class="grow" d="M70 140C54 132 36 136 34 146C33 153 45 156 70 145Z" fill="#7DB87A" opacity="0.38" style="--del:1.35s;--dur:0.45s;--origin:70px 140px"/>'
+    +'<path class="grow" d="M70 133C86 125 104 129 106 139C107 146 95 149 70 138Z" fill="#7DB87A" opacity="0.38" style="--del:1.5s;--dur:0.45s;--origin:70px 133px"/>'
+    /* petalas — 8 ao redor */
+    +'<ellipse class="bloom" cx="70" cy="42" rx="5.5" ry="14" fill="#F2CE6B" style="--del:1.8s;--origin:70px 56px;--op:0.7"/>'
+    +'<ellipse class="bloom" cx="86" cy="46" rx="5.5" ry="14" fill="#F2CE6B" transform="rotate(45 86 46)" style="--del:1.88s;--origin:86px 60px;--op:0.65"/>'
+    +'<ellipse class="bloom" cx="93" cy="65" rx="5.5" ry="14" fill="#F2CE6B" transform="rotate(90 93 65)" style="--del:1.96s;--origin:93px 65px;--op:0.7"/>'
+    +'<ellipse class="bloom" cx="86" cy="84" rx="5.5" ry="14" fill="#F2CE6B" transform="rotate(135 86 84)" style="--del:2.04s;--origin:86px 84px;--op:0.6"/>'
+    +'<ellipse class="bloom" cx="70" cy="88" rx="5.5" ry="14" fill="#F2CE6B" transform="rotate(180 70 88)" style="--del:2.12s;--origin:70px 88px;--op:0.55"/>'
+    +'<ellipse class="bloom" cx="54" cy="84" rx="5.5" ry="14" fill="#F2CE6B" transform="rotate(225 54 84)" style="--del:2.2s;--origin:54px 84px;--op:0.6"/>'
+    +'<ellipse class="bloom" cx="47" cy="65" rx="5.5" ry="14" fill="#F2CE6B" transform="rotate(270 47 65)" style="--del:2.28s;--origin:47px 65px;--op:0.7"/>'
+    +'<ellipse class="bloom" cx="54" cy="46" rx="5.5" ry="14" fill="#F2CE6B" transform="rotate(315 54 46)" style="--del:2.36s;--origin:54px 46px;--op:0.65"/>'
+    /* petalas intermediarias */
+    +'<ellipse class="bloom" cx="78" cy="48" rx="4" ry="10" fill="#EBC44E" transform="rotate(22 78 48)" style="--del:2.0s;--origin:78px 58px;--op:0.5"/>'
+    +'<ellipse class="bloom" cx="90" cy="56" rx="4" ry="10" fill="#EBC44E" transform="rotate(67 90 56)" style="--del:2.08s;--origin:90px 56px;--op:0.45"/>'
+    +'<ellipse class="bloom" cx="62" cy="48" rx="4" ry="10" fill="#EBC44E" transform="rotate(-22 62 48)" style="--del:2.16s;--origin:62px 58px;--op:0.5"/>'
+    +'<ellipse class="bloom" cx="50" cy="56" rx="4" ry="10" fill="#EBC44E" transform="rotate(-67 50 56)" style="--del:2.24s;--origin:50px 56px;--op:0.45"/>'
+    /* centro */
+    +'<circle class="bloom" cx="70" cy="65" r="14" fill="#D4960A" style="--del:2.5s;--origin:70px 65px;--op:0.35"/>'
+    +'<circle class="bloom" cx="70" cy="65" r="11" fill="#C48A08" style="--del:2.58s;--origin:70px 65px;--op:0.3"/>'
+    +'<circle class="bloom" cx="70" cy="65" r="14" stroke="#9C6500" stroke-width="1.6" fill="none" style="--del:2.55s;--origin:70px 65px;--op:0.5"/>'
+    /* olhinhos */
+    +'<circle class="bloom" cx="64" cy="62" r="2" fill="#5A3800" style="--del:2.7s;--origin:64px 62px;--op:0.7"/>'
+    +'<circle class="bloom" cx="76" cy="62" r="2" fill="#5A3800" style="--del:2.74s;--origin:76px 62px;--op:0.7"/>'
+    +'<circle class="bloom" cx="64" cy="61" r="0.7" fill="white" style="--del:2.78s;--origin:64px 61px;--op:0.8"/>'
+    +'<circle class="bloom" cx="76" cy="61" r="0.7" fill="white" style="--del:2.82s;--origin:76px 61px;--op:0.8"/>'
+    /* sorriso */
+    +'<path class="draw" d="M65 69C66.5 71 73.5 71 75 69" stroke="#5A3800" stroke-width="1.3" stroke-linecap="round" fill="none" style="--path-len:12;--dur:0.3s;--del:2.86s"/>'
+    /* bochechas */
+    +'<circle class="bloom" cx="59" cy="68" r="2.8" fill="#F4A7B9" style="--del:2.9s;--origin:59px 68px;--op:0.28"/>'
+    +'<circle class="bloom" cx="81" cy="68" r="2.8" fill="#F4A7B9" style="--del:2.94s;--origin:81px 68px;--op:0.28"/>'
+    +'</g></svg>',
+
+  cacto: '<svg viewBox="0 0 140 220" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    +'<g class="plant-group">'
+    /* vasinho */
+    +'<path class="grow" d="M43 195C42 200 43 206 46 209C49 212 91 212 94 209C97 206 98 200 97 195" fill="#D4A574" opacity="0.88" style="--del:0.1s;--dur:0.5s;--origin:70px 205px"/>'
+    +'<path class="draw" d="M40 195H100" stroke="#B8885A" stroke-width="2.8" stroke-linecap="round" style="--path-len:60;--dur:0.4s;--del:0.1s"/>'
+    +'<ellipse class="grow" cx="70" cy="195" rx="28" ry="4" fill="#E8C4A0" opacity="0.5" style="--del:0.3s;--dur:0.4s;--origin:70px 195px"/>'
+    /* corpo central */
+    +'<rect class="grow" x="55" y="60" width="30" height="135" rx="15" fill="#8CC5A0" opacity="0.5" style="--del:0.4s;--dur:0.8s;--origin:70px 195px"/>'
+    +'<rect class="grow" x="55" y="60" width="30" height="135" rx="15" stroke="#8CC5A0" stroke-width="2.4" fill="none" style="--del:0.4s;--dur:0.8s;--origin:70px 195px"/>'
+    /* linhas textura */
+    +'<path class="draw" d="M63 75V185" stroke="#8CC5A0" stroke-width="0.9" opacity="0.3" style="--path-len:110;--dur:1s;--del:1.2s"/>'
+    +'<path class="draw" d="M70 68V190" stroke="#8CC5A0" stroke-width="0.9" opacity="0.3" style="--path-len:122;--dur:1s;--del:1.25s"/>'
+    +'<path class="draw" d="M77 75V185" stroke="#8CC5A0" stroke-width="0.9" opacity="0.3" style="--path-len:110;--dur:1s;--del:1.3s"/>'
+    /* braco esquerdo */
+    +'<path class="draw" d="M55 140H38C28 140 22 130 22 120C22 110 28 103 38 103" stroke="#8CC5A0" stroke-width="2.4" stroke-linecap="round" fill="none" style="--path-len:70;--dur:0.8s;--del:1.5s"/>'
+    +'<path class="grow" d="M55 140H38C28 140 22 130 22 120C22 110 28 103 38 103C38 103 38 113 38 120C38 127 38 140 55 140Z" fill="#8CC5A0" opacity="0.45" style="--del:1.5s;--dur:0.6s;--origin:55px 140px"/>'
+    +'<path class="draw" d="M38 103V80" stroke="#8CC5A0" stroke-width="2.4" stroke-linecap="round" style="--path-len:23;--dur:0.5s;--del:2.0s"/>'
+    /* braco direito */
+    +'<path class="draw" d="M85 150H102C112 150 118 140 118 130C118 120 112 113 102 113" stroke="#8CC5A0" stroke-width="2.4" stroke-linecap="round" fill="none" style="--path-len:70;--dur:0.8s;--del:1.7s"/>'
+    +'<path class="grow" d="M85 150H102C112 150 118 140 118 130C118 120 112 113 102 113C102 113 102 123 102 130C102 137 102 150 85 150Z" fill="#8CC5A0" opacity="0.45" style="--del:1.7s;--dur:0.6s;--origin:85px 150px"/>'
+    +'<path class="draw" d="M102 113V93" stroke="#8CC5A0" stroke-width="2.4" stroke-linecap="round" style="--path-len:20;--dur:0.5s;--del:2.2s"/>'
+    /* espinhos */
+    +'<line class="grow" x1="53" y1="115" x2="47" y2="111" stroke="#8CC5A0" stroke-width="1.3" stroke-linecap="round" opacity="0.65" style="--del:2.4s;--dur:0.2s"/>'
+    +'<line class="grow" x1="87" y1="105" x2="93" y2="101" stroke="#8CC5A0" stroke-width="1.3" stroke-linecap="round" opacity="0.65" style="--del:2.45s;--dur:0.2s"/>'
+    +'<line class="grow" x1="53" y1="165" x2="47" y2="167" stroke="#8CC5A0" stroke-width="1.2" stroke-linecap="round" opacity="0.55" style="--del:2.5s;--dur:0.2s"/>'
+    +'<line class="grow" x1="87" y1="175" x2="93" y2="173" stroke="#8CC5A0" stroke-width="1.2" stroke-linecap="round" opacity="0.55" style="--del:2.55s;--dur:0.2s"/>'
+    /* flor rosa no topo — mais elaborada */
+    +'<ellipse class="bloom" cx="70" cy="56" rx="8" ry="7" fill="#F4A7B9" style="--del:2.7s;--origin:70px 56px;--op:0.5"/>'
+    +'<ellipse class="bloom" cx="63" cy="54" rx="5.5" ry="4.5" fill="#F4C0D0" transform="rotate(-18 63 54)" style="--del:2.76s;--origin:70px 56px;--op:0.45"/>'
+    +'<ellipse class="bloom" cx="77" cy="54" rx="5.5" ry="4.5" fill="#F4C0D0" transform="rotate(18 77 54)" style="--del:2.82s;--origin:70px 56px;--op:0.45"/>'
+    +'<circle class="bloom" cx="70" cy="57" r="4" fill="#E8889E" style="--del:2.88s;--origin:70px 57px;--op:0.55"/>'
+    +'<circle class="bloom" cx="70" cy="57" r="2.2" fill="#C96078" style="--del:2.94s;--origin:70px 57px;--op:0.42"/>'
+    +'</g></svg>',
+
+  cerejeira: '<svg viewBox="0 0 140 220" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    +'<g class="plant-group">'
+    /* vasinho bonsai — marrom escuro */
+    +'<path class="grow" d="M48 200C48 200 44 210 47 213C50 216 90 216 93 213C96 210 92 200 92 200" fill="#8B6B52" opacity="0.8" style="--del:0.1s;--dur:0.5s;--origin:70px 210px"/>'
+    +'<path class="draw" d="M44 200H96" stroke="#7A5840" stroke-width="3" stroke-linecap="round" style="--path-len:52;--dur:0.4s;--del:0.1s"/>'
+    +'<ellipse class="grow" cx="70" cy="199" rx="24" ry="4" fill="#6BAF68" opacity="0.35" style="--del:0.3s;--dur:0.4s;--origin:70px 199px"/>'
+    /* tronco principal — curva bonsai */
+    +'<path class="draw" d="M70 198C70 188 66 175 62 160C58 145 60 130 65 120C70 110 72 105 72 95" stroke="#6B4E38" stroke-width="5" stroke-linecap="round" style="--path-len:120;--dur:1.4s;--del:0.3s"/>'
+    +'<path class="draw" d="M70 198C70 188 66 175 62 160C58 145 60 130 65 120C70 110 72 105 72 95" stroke="#8B6B52" stroke-width="3" stroke-linecap="round" style="--path-len:120;--dur:1.4s;--del:0.3s"/>'
+    /* galho esquerdo */
+    +'<path class="draw" d="M62 160C52 152 42 145 32 140C25 137 18 137 14 139" stroke="#7A5840" stroke-width="3" stroke-linecap="round" style="--path-len:60;--dur:0.9s;--del:0.9s"/>'
+    +'<path class="draw" d="M62 160C52 152 42 145 32 140C25 137 18 137 14 139" stroke="#A07E64" stroke-width="1.6" stroke-linecap="round" style="--path-len:60;--dur:0.9s;--del:0.9s"/>'
+    /* galho direito-alto */
+    +'<path class="draw" d="M68 115C76 108 86 102 98 98C106 95 115 94 120 96" stroke="#7A5840" stroke-width="2.6" stroke-linecap="round" style="--path-len:60;--dur:0.7s;--del:1.05s"/>'
+    /* galho topo */
+    +'<path class="draw" d="M72 95C78 82 86 70 92 60C96 52 100 46 100 40" stroke="#7A5840" stroke-width="2.4" stroke-linecap="round" style="--path-len:65;--dur:0.8s;--del:1.15s"/>'
+    /* sub-galhos finos */
+    +'<path class="draw" d="M32 140C28 135 24 130 22 127" stroke="#A07E64" stroke-width="1.4" stroke-linecap="round" opacity="0.7" style="--path-len:16;--dur:0.3s;--del:1.3s"/>'
+    +'<path class="draw" d="M40 144C36 140 32 136 30 134" stroke="#A07E64" stroke-width="1.2" stroke-linecap="round" opacity="0.6" style="--path-len:14;--dur:0.3s;--del:1.35s"/>'
+    +'<path class="draw" d="M120 96C124 92 128 88 130 85" stroke="#A07E64" stroke-width="1.4" stroke-linecap="round" opacity="0.7" style="--path-len:14;--dur:0.3s;--del:1.4s"/>'
+    +'<path class="draw" d="M110 98C114 94 118 92 120 92" stroke="#A07E64" stroke-width="1.2" stroke-linecap="round" opacity="0.6" style="--path-len:12;--dur:0.3s;--del:1.42s"/>'
+    +'<path class="draw" d="M100 40C104 36 108 34 110 32" stroke="#A07E64" stroke-width="1.4" stroke-linecap="round" opacity="0.7" style="--path-len:12;--dur:0.3s;--del:1.45s"/>'
+    +'<path class="draw" d="M96 46C92 42 88 38 86 36" stroke="#A07E64" stroke-width="1.2" stroke-linecap="round" opacity="0.6" style="--path-len:12;--dur:0.3s;--del:1.48s"/>'
+    /* copa esquerda — nuvem de flores */
+    +'<ellipse class="bloom" cx="20" cy="132" rx="10" ry="8" fill="#F2B5C4" style="--del:1.6s;--origin:20px 132px;--op:0.5"/>'
+    +'<ellipse class="bloom" cx="30" cy="128" rx="9" ry="7" fill="#F2B5C4" style="--del:1.68s;--origin:30px 128px;--op:0.48"/>'
+    +'<ellipse class="bloom" cx="14" cy="128" rx="8" ry="6.5" fill="#F2B5C4" style="--del:1.74s;--origin:14px 128px;--op:0.42"/>'
+    +'<ellipse class="bloom" cx="24" cy="124" rx="7.5" ry="6" fill="#F2B5C4" style="--del:1.8s;--origin:24px 124px;--op:0.45"/>'
+    +'<ellipse class="bloom" cx="18" cy="137" rx="7" ry="5.5" fill="#F2B5C4" style="--del:1.86s;--origin:18px 137px;--op:0.38"/>'
+    +'<circle class="bloom" cx="22" cy="130" r="3.5" fill="#C95578" style="--del:1.95s;--origin:22px 130px;--op:0.55"/>'
+    +'<circle class="bloom" cx="22" cy="130" r="1.8" fill="#A04060" style="--del:2.02s;--origin:22px 130px;--op:0.38"/>'
+    +'<circle class="bloom" cx="14" cy="127" r="2.2" fill="#C95578" style="--del:2.0s;--origin:14px 127px;--op:0.4"/>'
+    /* copa direita — nuvem de flores */
+    +'<ellipse class="bloom" cx="118" cy="90" rx="10" ry="8" fill="#F2B5C4" style="--del:1.85s;--origin:118px 90px;--op:0.52"/>'
+    +'<ellipse class="bloom" cx="126" cy="86" rx="9" ry="7" fill="#F2B5C4" style="--del:1.92s;--origin:126px 86px;--op:0.48"/>'
+    +'<ellipse class="bloom" cx="112" cy="86" rx="8" ry="6.5" fill="#F2B5C4" style="--del:1.98s;--origin:112px 86px;--op:0.44"/>'
+    +'<ellipse class="bloom" cx="122" cy="94" rx="8" ry="6" fill="#F2B5C4" style="--del:2.04s;--origin:122px 94px;--op:0.4"/>'
+    +'<circle class="bloom" cx="120" cy="90" r="3.8" fill="#C95578" style="--del:2.12s;--origin:120px 90px;--op:0.55"/>'
+    +'<circle class="bloom" cx="120" cy="90" r="2" fill="#A04060" style="--del:2.18s;--origin:120px 90px;--op:0.4"/>'
+    +'<circle class="bloom" cx="127" cy="86" r="2.5" fill="#C95578" style="--del:2.14s;--origin:127px 86px;--op:0.38"/>'
+    /* copa topo — nuvem de flores */
+    +'<ellipse class="bloom" cx="98" cy="36" rx="9" ry="8" fill="#F2B5C4" style="--del:2.0s;--origin:98px 36px;--op:0.54"/>'
+    +'<ellipse class="bloom" cx="90" cy="32" rx="8" ry="7" fill="#F2B5C4" style="--del:2.06s;--origin:90px 32px;--op:0.5"/>'
+    +'<ellipse class="bloom" cx="104" cy="30" rx="7.5" ry="6" fill="#F2B5C4" style="--del:2.12s;--origin:104px 30px;--op:0.46"/>'
+    +'<ellipse class="bloom" cx="96" cy="42" rx="7" ry="5.5" fill="#F2B5C4" style="--del:2.18s;--origin:96px 42px;--op:0.42"/>'
+    +'<ellipse class="bloom" cx="86" cy="36" rx="6.5" ry="5.5" fill="#F2B5C4" style="--del:2.22s;--origin:86px 36px;--op:0.4"/>'
+    +'<ellipse class="bloom" cx="108" cy="36" rx="6" ry="5" fill="#F2B5C4" style="--del:2.24s;--origin:108px 36px;--op:0.38"/>'
+    +'<circle class="bloom" cx="97" cy="36" r="4" fill="#C95578" style="--del:2.3s;--origin:97px 36px;--op:0.58"/>'
+    +'<circle class="bloom" cx="97" cy="36" r="2" fill="#A04060" style="--del:2.36s;--origin:97px 36px;--op:0.42"/>'
+    +'<circle class="bloom" cx="88" cy="33" r="2.8" fill="#C95578" style="--del:2.34s;--origin:88px 33px;--op:0.4"/>'
+    /* highlights nas copas */
+    +'<ellipse class="bloom" cx="96" cy="33" rx="3" ry="2" fill="white" style="--del:2.4s;--origin:96px 33px;--op:0.22"/>'
+    +'<ellipse class="bloom" cx="20" cy="127" rx="2.5" ry="1.8" fill="white" style="--del:2.42s;--origin:20px 127px;--op:0.18"/>'
+    +'<ellipse class="bloom" cx="120" cy="86" rx="2.5" ry="1.5" fill="white" style="--del:2.44s;--origin:120px 86px;--op:0.18"/>'
+    /* petalas caindo — neve de sakura */
+    +'<ellipse class="drift" cx="50" cy="100" rx="3.5" ry="2.2" fill="#F2B5C4" opacity="0.5" style="--del:2.5s;--dur:4.5s;--dx:-20px;--dy:65px;--dr:90deg"/>'
+    +'<ellipse class="drift" cx="80" cy="60" rx="3" ry="1.8" fill="#F4C9D6" opacity="0.45" style="--del:2.8s;--dur:5s;--dx:12px;--dy:55px;--dr:-70deg"/>'
+    +'<ellipse class="drift" cx="110" cy="115" rx="2.8" ry="1.6" fill="#F2B5C4" opacity="0.4" style="--del:3.1s;--dur:5.5s;--dx:-18px;--dy:60px;--dr:110deg"/>'
+    +'<ellipse class="drift" cx="60" cy="70" rx="2.5" ry="1.5" fill="#F4C9D6" opacity="0.38" style="--del:3.4s;--dur:6s;--dx:-10px;--dy:70px;--dr:-80deg"/>'
+    +'<ellipse class="drift" cx="40" cy="155" rx="2.2" ry="1.4" fill="#F2B5C4" opacity="0.35" style="--del:3.7s;--dur:5s;--dx:15px;--dy:40px;--dr:60deg"/>'
+    +'<ellipse class="drift" cx="100" cy="50" rx="2" ry="1.2" fill="#F4C9D6" opacity="0.3" style="--del:4.0s;--dur:6s;--dx:-25px;--dy:75px;--dr:140deg"/>'
+    +'<ellipse class="drift" cx="30" cy="110" rx="1.8" ry="1.1" fill="#F2B5C4" opacity="0.28" style="--del:4.3s;--dur:5.5s;--dx:20px;--dy:50px;--dr:-60deg"/>'
+    +'</g></svg>',
+
+  lotus: '<svg viewBox="0 0 140 220" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    +'<g class="plant-group">'
+    /* aura magica — glow suave */
+    +'<circle class="bloom" cx="70" cy="110" r="55" fill="#D4B8D4" style="--del:0.3s;--dur:1.2s;--origin:70px 110px;--op:0.06"/>'
+    +'<circle class="bloom" cx="70" cy="105" r="38" fill="#D4B8D4" style="--del:0.5s;--dur:1s;--origin:70px 105px;--op:0.08"/>'
+    /* agua — ondulacoes */
+    +'<path class="draw" d="M10 182C25 179 45 184 70 182C95 179 115 184 130 182" stroke="#D4B8D4" stroke-width="1.2" stroke-linecap="round" opacity="0.22" style="--path-len:130;--dur:1.2s;--del:0.2s"/>'
+    +'<path class="draw" d="M15 188C32 186 52 190 70 188C88 186 108 190 125 188" stroke="#D4B8D4" stroke-width="0.8" stroke-linecap="round" opacity="0.12" style="--path-len:120;--dur:1s;--del:0.4s"/>'
+    /* lily pads */
+    +'<ellipse class="grow" cx="38" cy="178" rx="18" ry="6" fill="#7EC47A" opacity="0.3" style="--del:0.8s;--dur:0.6s;--origin:38px 178px"/>'
+    +'<path class="grow" d="M38 178C38 175 40 174 42 175" stroke="#5EA05A" stroke-width="0.5" opacity="0.3" fill="none" style="--del:1.0s;--dur:0.3s"/>'
+    +'<ellipse class="grow" cx="102" cy="176" rx="15" ry="5.5" fill="#7EC47A" opacity="0.25" style="--del:0.95s;--dur:0.6s;--origin:102px 176px"/>'
+    /* caule gracioso */
+    +'<path class="draw" d="M70 178Q68 165 70 142" stroke="#6EAA68" stroke-width="2.8" stroke-linecap="round" opacity="0.5" style="--path-len:40;--dur:0.9s;--del:0.7s"/>'
+    /* camada 1: petalas externas bem abertas (arredondadas) */
+    +'<path class="bloom" d="M70 140Q44 144 28 136Q24 133 30 131Q42 130 70 137Z" fill="#D4B8D4" style="--del:1.4s;--dur:0.55s;--origin:70px 140px;--op:0.28"/>'
+    +'<path class="bloom" d="M70 140Q96 144 112 136Q116 133 110 131Q98 130 70 137Z" fill="#D4B8D4" style="--del:1.5s;--dur:0.55s;--origin:70px 140px;--op:0.28"/>'
+    +'<path class="bloom" d="M70 140Q40 134 28 122Q25 118 32 119Q46 121 70 136Z" fill="#D4B8D4" style="--del:1.6s;--dur:0.55s;--origin:70px 140px;--op:0.32"/>'
+    +'<path class="bloom" d="M70 140Q100 134 112 122Q115 118 108 119Q94 121 70 136Z" fill="#D4B8D4" style="--del:1.7s;--dur:0.55s;--origin:70px 140px;--op:0.32"/>'
+    +'<path class="bloom" d="M70 139Q52 140 42 148Q38 151 44 150Q52 148 70 140Z" fill="#D4B8D4" style="--del:1.55s;--dur:0.5s;--origin:70px 140px;--op:0.2"/>'
+    /* camada 2: petalas medias */
+    +'<path class="bloom" d="M70 134Q48 130 38 118Q36 114 42 115Q50 117 70 131Z" fill="#E8CCE8" style="--del:1.85s;--dur:0.5s;--origin:70px 134px;--op:0.48"/>'
+    +'<path class="bloom" d="M70 134Q92 130 102 118Q104 114 98 115Q90 117 70 131Z" fill="#E8CCE8" style="--del:1.95s;--dur:0.5s;--origin:70px 134px;--op:0.48"/>'
+    +'<path class="bloom" d="M70 132Q46 126 40 112Q39 108 44 110Q50 113 70 128Z" fill="#D4B8D4" style="--del:2.05s;--dur:0.48s;--origin:70px 132px;--op:0.44"/>'
+    +'<path class="bloom" d="M70 132Q94 126 100 112Q101 108 96 110Q90 113 70 128Z" fill="#D4B8D4" style="--del:2.15s;--dur:0.48s;--origin:70px 132px;--op:0.44"/>'
+    /* camada 3: petalas internas — calice */
+    +'<path class="bloom" d="M70 128Q54 120 50 106Q49 100 54 103Q60 108 70 124Z" fill="#EEE0F0" style="--del:2.25s;--dur:0.48s;--origin:70px 128px;--op:0.58"/>'
+    +'<path class="bloom" d="M70 128Q86 120 90 106Q91 100 86 103Q80 108 70 124Z" fill="#EEE0F0" style="--del:2.35s;--dur:0.48s;--origin:70px 128px;--op:0.58"/>'
+    +'<path class="bloom" d="M70 124Q56 116 54 100Q54 94 58 98Q62 104 70 120Z" fill="#D4B8D4" style="--del:2.45s;--dur:0.45s;--origin:70px 124px;--op:0.6"/>'
+    +'<path class="bloom" d="M70 124Q84 116 86 100Q86 94 82 98Q78 104 70 120Z" fill="#D4B8D4" style="--del:2.5s;--dur:0.45s;--origin:70px 124px;--op:0.6"/>'
+    /* camada 4: petalas quase fechadas */
+    +'<path class="bloom" d="M70 118Q62 108 62 90Q62 82 70 88Q72 96 70 114Z" fill="#F4E8F4" style="--del:2.6s;--dur:0.45s;--origin:70px 118px;--op:0.68"/>'
+    +'<path class="bloom" d="M70 118Q78 108 78 90Q78 82 70 88Q68 96 70 114Z" fill="#F4E8F4" style="--del:2.65s;--dur:0.45s;--origin:70px 118px;--op:0.68"/>'
+    /* petala central — ponta elegante */
+    +'<path class="bloom" d="M70 100Q68 86 68.5 68Q69 58 70 52Q71 58 71.5 68Q72 86 70 100Z" fill="#D4B8D4" style="--del:2.75s;--dur:0.5s;--origin:70px 100px;--op:0.82"/>'
+    +'<path class="bloom" d="M70 94Q69 82 69.5 68Q69.8 60 70 56Q70.2 60 70.5 68Q71 82 70 94Z" fill="white" style="--del:2.85s;--dur:0.4s;--origin:70px 94px;--op:0.2"/>'
+    /* centro dourado brilhante */
+    +'<ellipse class="bloom" cx="70" cy="132" rx="10" ry="7" fill="#FFE082" style="--del:2.9s;--origin:70px 132px;--op:0.9"/>'
+    +'<ellipse class="bloom" cx="70" cy="132" rx="7" ry="5" fill="#FFC837" style="--del:2.98s;--origin:70px 132px;--op:0.8"/>'
+    +'<ellipse class="bloom" cx="70" cy="131" rx="4.5" ry="3.2" fill="#FFB300" style="--del:3.04s;--origin:70px 131px;--op:0.55"/>'
+    /* sementes fofas no centro */
+    +'<circle class="bloom" cx="68" cy="130.5" r="1.3" fill="#E6960A" style="--del:3.1s;--origin:68px 130.5px;--op:0.5"/>'
+    +'<circle class="bloom" cx="72" cy="130.5" r="1.3" fill="#E6960A" style="--del:3.14s;--origin:72px 130.5px;--op:0.5"/>'
+    +'<circle class="bloom" cx="70" cy="128.5" r="1.3" fill="#E6960A" style="--del:3.18s;--origin:70px 128.5px;--op:0.45"/>'
+    +'<circle class="bloom" cx="66" cy="132.5" r="1" fill="#E6960A" style="--del:3.22s;--origin:66px 132.5px;--op:0.38"/>'
+    +'<circle class="bloom" cx="74" cy="132.5" r="1" fill="#E6960A" style="--del:3.24s;--origin:74px 132.5px;--op:0.38"/>'
+    /* reflexo no centro */
+    +'<ellipse class="bloom" cx="67.5" cy="130" rx="2.5" ry="1.5" fill="white" style="--del:3.28s;--origin:67.5px 130px;--op:0.28"/>'
+    /* sparkles magicos */
+    +'<circle class="bloom" cx="22" cy="75" r="2.2" fill="white" style="--del:3.0s;--origin:22px 75px;--op:0.45"/>'
+    +'<circle class="bloom" cx="22" cy="75" r="0.9" fill="white" style="--del:3.05s;--origin:22px 75px;--op:0.8"/>'
+    +'<circle class="bloom" cx="118" cy="70" r="1.8" fill="white" style="--del:3.15s;--origin:118px 70px;--op:0.38"/>'
+    +'<circle class="bloom" cx="118" cy="70" r="0.75" fill="white" style="--del:3.2s;--origin:118px 70px;--op:0.72"/>'
+    +'<circle class="bloom" cx="16" cy="130" r="1.5" fill="white" style="--del:3.3s;--origin:16px 130px;--op:0.32"/>'
+    +'<circle class="bloom" cx="16" cy="130" r="0.6" fill="white" style="--del:3.34s;--origin:16px 130px;--op:0.65"/>'
+    +'<circle class="bloom" cx="124" cy="135" r="1.7" fill="white" style="--del:3.25s;--origin:124px 135px;--op:0.35"/>'
+    +'<circle class="bloom" cx="124" cy="135" r="0.7" fill="white" style="--del:3.3s;--origin:124px 135px;--op:0.68"/>'
+    +'<circle class="bloom" cx="38" cy="55" r="1.2" fill="white" style="--del:3.35s;--origin:38px 55px;--op:0.3"/>'
+    +'<circle class="bloom" cx="105" cy="50" r="1.3" fill="white" style="--del:3.4s;--origin:105px 50px;--op:0.32"/>'
+    /* gotinhas de orvalho nas petalas */
+    +'<circle class="bloom" cx="48" cy="112" r="2.5" fill="white" style="--del:3.1s;--origin:48px 112px;--op:0.28"/>'
+    +'<circle class="bloom" cx="48" cy="112" r="1" fill="white" style="--del:3.15s;--origin:48px 112px;--op:0.55"/>'
+    +'<circle class="bloom" cx="92" cy="108" r="2.2" fill="white" style="--del:3.2s;--origin:92px 108px;--op:0.24"/>'
+    +'<circle class="bloom" cx="92" cy="108" r="0.9" fill="white" style="--del:3.25s;--origin:92px 108px;--op:0.5"/>'
+    /* highlights suaves nas petalas */
+    +'<path class="draw" d="M66 62Q67 58 68 56" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.25" style="--path-len:8;--dur:0.3s;--del:3.0s"/>'
+    +'<path class="draw" d="M56 96Q58 92 59 89" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.18" style="--path-len:8;--dur:0.3s;--del:3.1s"/>'
+    +'<path class="draw" d="M84 96Q82 92 81 89" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.18" style="--path-len:8;--dur:0.3s;--del:3.15s"/>'
+    +'</g></svg>'
+};
+
+/* States */
+var states = {
+  s1: { plant: 'lavanda',   color: '#C4B0E0', glow: 'rgba(196,176,224,0.35)', ctaRgba: 'rgba(196,176,224,0.82)', shadow: '0 6px 32px rgba(196,176,224,0.35)' },
+  s2: { plant: 'girassol',  color: '#F2CE6B', glow: 'rgba(242,206,107,0.35)', ctaRgba: 'rgba(242,206,107,0.82)', shadow: '0 6px 32px rgba(242,206,107,0.35)' },
+  s3: { plant: 'cacto',     color: '#8CC5A0', glow: 'rgba(140,197,160,0.35)', ctaRgba: 'rgba(140,197,160,0.82)', shadow: '0 6px 32px rgba(140,197,160,0.35)' },
+  s4: { plant: 'cerejeira', color: '#F2B5C4', glow: 'rgba(242,181,196,0.35)', ctaRgba: 'rgba(242,181,196,0.82)', shadow: '0 6px 32px rgba(242,181,196,0.35)' },
+  s5: { plant: 'lotus',     color: '#D4B8D4', glow: 'rgba(212,184,212,0.35)', ctaRgba: 'rgba(212,184,212,0.82)', shadow: '0 6px 32px rgba(212,184,212,0.35)' }
+};
+
+var currentState = 's1';
+
+function renderPlant(containerId, plantKey) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = plantSVGs[plantKey] || '';
+}
+
+function setState(s) {
+  currentState = s;
+  document.querySelectorAll('.state-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.s === s);
+  });
+  var st = states[s];
+
+  document.documentElement.style.setProperty('--plant-color', st.color);
+  document.documentElement.style.setProperty('--plant-glow', st.glow);
+
+  renderPlant('a-plant', st.plant);
+  renderPlant('ios-plant', st.plant);
+
+  var aName = document.getElementById('a-input').value.trim();
+  var iName = document.getElementById('ios-input').value.trim();
+  if (aName) applyCtaColor('a', st);
+  if (iName) applyCtaColor('ios', st);
+}
+
+function applyCtaColor(p, st) {
+  if (p === 'a') {
+    var cta = document.getElementById('a-cta');
+    cta.style.background = st.color;
+    cta.style.boxShadow = st.shadow;
+  } else {
+    var cta = document.getElementById('ios-cta');
+    cta.style.background = st.ctaRgba;
+    cta.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.10), 0 4px 28px ' + st.glow;
+  }
+}
+
+function onName(platform, val) {
+  var trimmed = val.trim();
+  var ctaEl = document.getElementById(platform + '-cta');
+  if (trimmed.length > 0) {
+    ctaEl.textContent = 'Oi, ' + trimmed + '!';
+    if (!ctaEl.classList.contains('visible')) {
+      ctaEl.classList.add('visible');
+    }
+    applyCtaColor(platform, states[currentState]);
+  } else {
+    ctaEl.classList.remove('visible');
+    ctaEl.textContent = 'Oi!';
+  }
+
+  var other = platform === 'a' ? 'ios' : 'a';
+  var otherInput = document.getElementById(other + '-input');
+  if (otherInput.value !== val) {
+    otherInput.value = val;
+    onName(other, val);
+  }
+}
+
+setState('s1');
+</script>
+</body>
+</html>

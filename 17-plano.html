@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brota &mdash; Screen 17: Plano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #FFF8F2; color: #3D2C2E; font-family: -apple-system, sans-serif; min-height: 100vh; transition: background 0.6s ease, color 0.6s ease; }
+body.dark { background: #1A1418; }
+:root { --brand-real: #F4A7B9; }
+
+/* === STUDIO === */
+.studio { max-width: 1200px; margin: 0 auto; padding: 40px 24px 60px; }
+.studio-header { text-align: center; margin-bottom: 36px; }
+.brand-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #C4B5B7; margin-bottom: 10px; }
+.brand-title { font-size: 22px; font-weight: 700; color: #3D2C2E; margin-bottom: 8px; }
+.brand-title em { font-style: normal; font-size: 13px; font-weight: 400; color: #C4B5B7; display: block; margin-top: 5px; }
+.brand-sub { font-size: 13px; color: #C4B5B7; line-height: 1.65; max-width: 700px; margin: 0 auto; }
+.controls { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 40px; }
+.theme-btn { padding: 7px 18px; border: 1px solid rgba(61,44,46,0.10); border-radius: 999px; background: transparent; color: #9B8A8C; font-size: 12px; cursor: pointer; transition: all 0.2s ease; }
+.theme-btn:hover { border-color: #C4B5B7; color: rgba(61,44,46,0.70); }
+.state-sep { width: 1px; height: 20px; background: #FFFFFF; }
+.state-btn { padding: 7px 18px; border: 1px solid rgba(61,44,46,0.10); border-radius: 999px; background: transparent; color: #C4B5B7; font-size: 12px; cursor: pointer; transition: all 0.25s ease; }
+.state-btn.active { background: #FFFFFF; color: rgba(61,44,46,0.70); border-color: #C4B5B7; }
+.stage { display: flex; gap: 40px; justify-content: center; align-items: flex-start; }
+.phone-wrapper { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.phone-label { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.10em; }
+.pill.android { background: linear-gradient(135deg, #34A853, #4285F4); color: white; }
+.pill.ios { background: linear-gradient(135deg, #1C1C1E, #48484A); color: white; }
+.phone-label .desc { font-size: 12px; opacity: 0.42; max-width: 280px; line-height: 1.4; }
+.phone { width: 360px; height: 720px; background: #1A1A1A; border: 1px solid rgba(61,44,46,0.08); border-radius: 44px; overflow: hidden; position: relative; }
+.phone-screen { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 44px; }
+.status-bar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+.status-bar .time { font-size: 15px; font-weight: 600; color: rgba(61,44,46,0.70); }
+.status-bar .icons { display: flex; gap: 5px; align-items: center; color: rgba(61,44,46,0.70); font-size: 11px; }
+.dynamic-island { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 34px; background: #000; border-radius: 999px; z-index: 20; }
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.screen.android-screen { background: #FFF8F2; }
+.screen.ios-screen     { background: #FFF8F2; }
+
+/* === KEYFRAMES === */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes titleSpring {
+  0%   { opacity:0; transform:translateY(12px) scale(0.96); }
+  58%  { opacity:1; transform:translateY(-2px) scale(1.01); }
+  100% { opacity:1; transform:none; }
+}
+@keyframes cardInM3E {
+  0%   { opacity:0; transform:scale(0.92) translateY(22px); }
+  54%  { opacity:1; transform:scale(1.02) translateY(-3px); }
+  100% { opacity:1; transform:scale(1) translateY(0); }
+}
+@keyframes cardInHIG {
+  from { opacity:0; transform:translateY(26px) scale(0.94); filter:blur(2px); }
+  to   { opacity:1; transform:none; filter:blur(0); }
+}
+@keyframes rowIn {
+  from { opacity:0; transform:translateY(9px) translateX(-4px); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes rowInHIG {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes promiseGlow {
+  0%   { text-shadow: 0 0 0 transparent; }
+  50%  { text-shadow: 0 0 18px rgba(var(--plant-color-rgb,155,143,212), 0.48); }
+  100% { text-shadow: none; }
+}
+@keyframes socialFade {
+  from { opacity:0; transform:translateY(6px); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes ctaIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:none;} }
+@keyframes softPulse { 0%,100%{transform:scale(1) rotate(-2deg);opacity:1;} 50%{transform:scale(1.08) rotate(2deg);opacity:1;} }
+@keyframes aBlob1 { 0%,100%{border-radius:56% 44% 50% 50%;transform:rotate(0) scale(1);} 33%{border-radius:44% 56% 62% 38%;transform:rotate(-6deg) scale(1.08);} 66%{border-radius:62% 38% 44% 56%;transform:rotate(3deg) scale(0.95);} }
+@keyframes aBlob2 { 0%,100%{border-radius:40% 60% 55% 45%;} 40%{border-radius:60% 40% 45% 55%;transform:rotate(7deg) scale(1.06);} 70%{border-radius:50% 50% 60% 40%;transform:rotate(-3deg) scale(0.96);} }
+@keyframes orbPulse { 0%,100%{opacity:0.16;transform:scale(1);} 50%{opacity:0.26;transform:scale(1.10);} }
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+}
+
+.anim-el { opacity: 0; }
+.reinit .anim-el { animation: none !important; opacity: 0 !important; }
+
+/* === ANDROID BG === */
+.a-blob-1 { position:absolute;z-index:0;pointer-events:none;width:600px;height:600px;background:var(--brand-real);opacity:0.18;filter:blur(96px);border-radius:56% 44% 50% 50%;top:-230px;left:-210px;animation:aBlob1 22s ease-in-out infinite; }
+.a-blob-2 { position:absolute;z-index:0;pointer-events:none;width:440px;height:440px;background:var(--plant-color,#9B8FD4);opacity:0.17;filter:blur(84px);border-radius:40% 60% 55% 45%;bottom:-90px;right:-150px;animation:aBlob2 28s ease-in-out infinite;transition:background 0.7s ease; }
+
+/* === ANDROID BODY === */
+.a-body {
+  position:relative; z-index:2; flex:1;
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  padding:54px 20px 92px; gap:11px;
+}
+
+.a-conn {
+  font-family:'Nunito',sans-serif;
+  font-variation-settings:'wdth' 100,'wght' 380,'opsz' 13;
+  font-size:13px; color:var(--plant-color,#9B8FD4); text-align:center;
+  transition:color 0.7s ease;
+  animation:fadeUp 0.50s ease-out 0.10s forwards;
+}
+.a-title {
+  font-family:'Nunito',sans-serif;
+  font-variation-settings:'wdth' 110,'wght' 720,'opsz' 26;
+  font-size:26px; color:#3D2C2E; text-align:center;
+  letter-spacing:-0.025em; line-height:1.15;
+  animation:titleSpring 0.60s cubic-bezier(0.34,1.56,0.64,1) 0.24s forwards;
+}
+
+/* Card */
+.a-plan-card {
+  width:100%; border-radius:24px;
+  background:#FFFFFF;
+  border:1px solid rgba(61,44,46,0.10);
+  overflow:hidden;
+  animation:cardInM3E 0.64s cubic-bezier(0.34,1.56,0.64,1) 0.44s forwards;
+  transition:background 0.7s ease, border-color 0.7s ease;
+}
+
+/* Card companion header */
+.a-plan-header {
+  display:flex; align-items:center; gap:13px;
+  padding:15px 18px;
+  background:rgba(var(--plant-color-rgb,155,143,212), 0.13);
+  transition:background 0.7s ease;
+  animation:fadeUp 0.50s cubic-bezier(0.34,1.56,0.64,1) 0.72s forwards;
+}
+.a-plant-emoji-lg { font-size:0; width:44px; height:44px; border-radius:50%; flex-shrink:0; animation:softPulse 2.8s ease-in-out 1.4s infinite; background:rgba(var(--plant-color-rgb,155,143,212),0.2); display:flex; align-items:center; justify-content:center; box-shadow: 0 0 16px rgba(var(--plant-color-rgb,155,143,212),0.25); }
+.a-plant-emoji-lg svg { width:30px; height:30px; filter: drop-shadow(0 1px 3px rgba(var(--plant-color-rgb,155,143,212),0.3)); }
+.a-plant-info { display:flex; flex-direction:column; gap:4px; }
+.a-plant-name {
+  font-family:'Nunito',sans-serif;
+  font-variation-settings:'wdth' 110,'wght' 700,'opsz' 19;
+  font-size:19px; color:#3D2C2E; letter-spacing:-0.01em;
+}
+.a-plant-tags { display:flex; gap:5px; }
+.a-plant-tag {
+  font-family:'Nunito',sans-serif;
+  font-variation-settings:'wdth' 100,'wght' 480,'opsz' 11;
+  font-size:10px; text-transform:uppercase; letter-spacing:0.09em;
+  color:var(--plant-color,#9B8FD4); padding:3px 8px;
+  background:rgba(var(--plant-color-rgb,155,143,212), 0.18);
+  border-radius:999px; border:1px solid rgba(var(--plant-color-rgb,155,143,212), 0.28);
+  transition:color 0.7s ease, background 0.7s ease, border-color 0.7s ease;
+}
+
+/* Promise rows — setup + payoff */
+.a-plan-row {
+  display:flex; flex-direction:column; gap:3px;
+  padding:13px 18px;
+  border: 1px solid rgba(61,44,46,0.08);
+}
+.a-row-setup {
+  font-family:'Nunito',sans-serif;
+  font-variation-settings:'wdth' 100,'wght' 380,'opsz' 12;
+  font-size:12px; color:#9B8A8C; line-height:1.3;
+}
+.a-row-promise {
+  font-family:'Nunito',sans-serif;
+  font-variation-settings:'wdth' 108,'wght' 620,'opsz' 16;
+  font-size:16px; color:#3D2C2E; line-height:1.30; letter-spacing:-0.01em;
+}
+/* Outcome row — plant color for emotional punch */
+.promise-outcome {
+  color:var(--plant-color,#9B8FD4) !important;
+  transition:color 0.7s ease;
+}
+
+/* Row stagger */
+.a-row-1 { animation:rowIn 0.48s cubic-bezier(0.34,1.56,0.64,1) 0.96s forwards; }
+.a-row-2 { animation:rowIn 0.48s cubic-bezier(0.34,1.56,0.64,1) 1.10s forwards; }
+.a-row-3 { animation:rowIn 0.48s cubic-bezier(0.34,1.56,0.64,1) 1.24s forwards; }
+.a-row-4 { animation:rowIn 0.48s cubic-bezier(0.34,1.56,0.64,1) 1.38s forwards; }
+.a-row-5 { animation:rowIn 0.48s cubic-bezier(0.34,1.56,0.64,1) 1.52s forwards; }
+
+/* Social proof */
+.a-social {
+  font-family:'Nunito',sans-serif;
+  font-variation-settings:'wdth' 100,'wght' 360,'opsz' 11;
+  font-size:12px; color:#C4B5B7; text-align:center;
+  line-height:1.55; max-width:262px; font-style:italic;
+  animation:socialFade 0.50s ease-out 1.52s forwards;
+}
+
+/* CTA */
+.a-cta {
+  position:absolute; bottom:26px; left:16px; right:16px;
+  height:52px; border:none; border-radius:28px;
+  background:rgba(var(--plant-color-rgb,155,143,212),0.82);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.30),inset 0 -1px 0 rgba(0,0,0,0.10),0 4px 28px rgba(var(--plant-color-rgb,155,143,212),0.38);
+  color:white; cursor:pointer;
+  font-family:'Nunito',sans-serif;
+  font-variation-settings:'wdth' 108,'wght' 620,'opsz' 17;
+  font-size:17px; z-index:5;
+  transition:background 0.7s ease, box-shadow 0.7s ease, border-radius 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  animation:ctaIn 0.50s cubic-bezier(0.34,1.56,0.64,1) 1.70s forwards;
+}
+.a-cta:active { border-radius:18px; transform:scale(0.97); }
+
+/* === iOS BG === */
+.ios-orb { position:absolute; border-radius:50%; filter:blur(76px); pointer-events:none; z-index:0; }
+.ios-orb.a { width:500px;height:500px;background:var(--brand-real);opacity:0.22;top:-170px;left:-170px;animation:orbPulse 5.8s ease-in-out infinite; }
+.ios-orb.b { width:340px;height:340px;background:var(--plant-color,#9B8FD4);opacity:0.17;bottom:-70px;right:-90px;animation:orbPulse 7.2s ease-in-out 1.8s infinite;transition:background 0.7s ease; }
+
+/* === iOS BODY === */
+.ios-body {
+  position:relative; z-index:2; flex:1;
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  padding:54px 20px 92px; gap:11px;
+}
+
+.ios-conn {
+  font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+  font-size:13px; font-weight:400; letter-spacing:-0.08px;
+  color:var(--plant-color,#9B8FD4); text-align:center; line-height:1.45;
+  transition:color 0.7s ease;
+  animation:fadeUp 0.46s cubic-bezier(0.32,0.72,0,1) 0.10s forwards;
+}
+.ios-title {
+  font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;
+  font-size:26px; font-weight:700; letter-spacing:-0.5px;
+  color:#3D2C2E; text-align:center; line-height:1.15;
+  animation:fadeUp 0.46s cubic-bezier(0.32,0.72,0,1) 0.24s forwards;
+}
+
+/* iOS Card */
+.ios-plan-card {
+  width:100%; border-radius:22px;
+  background:#FFFFFF;
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border: 1px solid rgba(61,44,46,0.10);
+  overflow:hidden;
+  animation:cardInHIG 0.58s cubic-bezier(0.32,0.72,0,1) 0.44s forwards;
+}
+
+/* iOS Card header */
+.ios-plan-header {
+  display:flex; align-items:center; gap:13px;
+  padding:15px 18px;
+  background:rgba(var(--plant-color-rgb,155,143,212), 0.13);
+  transition:background 0.7s ease;
+  animation:fadeUp 0.46s cubic-bezier(0.32,0.72,0,1) 0.72s forwards;
+}
+.ios-plant-emoji-lg { font-size:0; width:44px; height:44px; border-radius:50%; flex-shrink:0; animation:softPulse 3.2s ease-in-out 1.4s infinite; background:rgba(var(--plant-color-rgb,155,143,212),0.2); display:flex; align-items:center; justify-content:center; box-shadow: 0 0 16px rgba(var(--plant-color-rgb,155,143,212),0.25); transition:background 0.7s ease, box-shadow 0.7s ease; }
+.ios-plant-emoji-lg svg { width:30px; height:30px; filter: drop-shadow(0 1px 3px rgba(var(--plant-color-rgb,155,143,212),0.3)); }
+.ios-plant-info { display:flex; flex-direction:column; gap:4px; }
+.ios-plant-name {
+  font-family:-apple-system,'SF Pro Display',system-ui,sans-serif;
+  font-size:19px; font-weight:700; letter-spacing:-0.38px; color:#3D2C2E;
+}
+.ios-plant-tags { display:flex; gap:5px; }
+.ios-plant-tag {
+  font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+  font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:0.09em;
+  color:var(--plant-color,#9B8FD4); padding:3px 8px;
+  background:rgba(var(--plant-color-rgb,155,143,212), 0.15);
+  border-radius:999px; border:1px solid rgba(var(--plant-color-rgb,155,143,212), 0.26);
+  transition:color 0.7s ease, background 0.7s ease, border-color 0.7s ease;
+}
+
+/* iOS Promise rows */
+.ios-plan-row {
+  display:flex; flex-direction:column; gap:3px;
+  padding:13px 18px;
+  border-top:1px solid rgba(61,44,46,0.08);
+}
+.ios-row-setup {
+  font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+  font-size:12px; font-weight:400; letter-spacing:-0.10px;
+  color:#9B8A8C; line-height:1.3;
+}
+.ios-row-promise {
+  font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+  font-size:16px; font-weight:600; letter-spacing:-0.28px; line-height:1.30;
+  color:#3D2C2E;
+}
+
+/* iOS Row stagger */
+.ios-row-1 { animation:rowInHIG 0.44s cubic-bezier(0.32,0.72,0,1) 0.96s forwards; }
+.ios-row-2 { animation:rowInHIG 0.44s cubic-bezier(0.32,0.72,0,1) 1.10s forwards; }
+.ios-row-3 { animation:rowInHIG 0.44s cubic-bezier(0.32,0.72,0,1) 1.24s forwards; }
+.ios-row-4 { animation:rowInHIG 0.44s cubic-bezier(0.32,0.72,0,1) 1.38s forwards; }
+.ios-row-5 { animation:rowInHIG 0.44s cubic-bezier(0.32,0.72,0,1) 1.52s forwards; }
+
+/* iOS Social proof */
+.ios-social {
+  font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+  font-size:12px; font-weight:400; font-style:italic; letter-spacing:-0.10px;
+  color:#C4B5B7; text-align:center; line-height:1.55; max-width:262px;
+  animation:socialFade 0.46s cubic-bezier(0.32,0.72,0,1) 1.52s forwards;
+}
+
+/* iOS CTA */
+.ios-cta {
+  position:absolute; bottom:26px; left:16px; right:16px;
+  height:52px; border:none; border-radius:999px;
+  background:rgba(155,143,212,0.82);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.30),inset 0 -1px 0 rgba(0,0,0,0.10),0 4px 28px rgba(155,143,212,0.38);
+  color:white; cursor:pointer;
+  font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+  font-size:17px; font-weight:600; letter-spacing:-0.25px; z-index:5;
+  transition:background 0.7s ease, box-shadow 0.7s ease;
+  animation:ctaIn 0.46s cubic-bezier(0.32,0.72,0,1) 1.70s forwards;
+}
+.ios-cta:active { transform:scale(0.96); opacity:0.86; }
+
+/* === ANNOTATIONS === */
+.annotations { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:40px; max-width:740px; margin-left:auto; margin-right:auto; }
+.note { background:rgba(61,44,46,0.03); border:1px solid rgba(61,44,46,0.08); border-radius:14px; padding:20px; }
+.note.android { border-top:3px solid #34A853; }
+.note.ios { border-top:3px solid #636366; }
+.note h4 { font-size:13px; font-weight:600; margin-bottom:10px; color:#9B8A8C; }
+.note ul { list-style:disc; padding-left:18px; }
+.note li { font-size:12px; color:#C4B5B7; line-height:1.68; margin-bottom:7px; }
+.note code { background:rgba(61,44,46,0.04); padding:1px 5px; border-radius:4px; font-size:11px; }
+</style>
+</head>
+
+<body>
+<div class="studio">
+
+  <div class="studio-header">
+    <div class="brand-eyebrow">Brota &middot; Onboarding &middot; Screen 17 de 18 &middot; O17-Plano</div>
+    <h1 class="brand-title">O que vai mudar pra voc&ecirc;. <em>3 promessas em linguagem humana &middot; setup + payoff por linha &middot; dados dela como evidência &middot; social proof pré-paywall</em></h1>
+    <p class="brand-sub">
+      Cada linha usa os dados que ela deu — rede, hor&aacute;rio, objetivo — e traduz em
+      experi&ecirc;ncia concreta: o que vai acontecer, n&atilde;o o nome da feature.
+      &ldquo;Mirror ativo para&rdquo; vira &ldquo;Sua Lavanda aparece quando voc&ecirc; abrir o Instagram &agrave; noite.&rdquo;
+    </p>
+  </div>
+
+  <div class="controls">
+    <button class="theme-btn" onclick="document.body.classList.toggle('dark')">&#9790; Tema</button>
+    <div class="state-sep"></div>
+    <button class="state-btn active" data-s="s1" onclick="setState('s1')">Lavanda &mdash; Ana</button>
+    <button class="state-btn"        data-s="s2" onclick="setState('s2')">Girassol &mdash; Bia</button>
+    <button class="state-btn"        data-s="s3" onclick="setState('s3')">Cacto &mdash; Carol</button>
+    <button class="state-btn"        data-s="s4" onclick="setState('s4')">Cerejeira &mdash; Dani</button>
+    <button class="state-btn"        data-s="s5" onclick="setState('s5')">Lotus &mdash; Eva</button>
+    <div class="state-sep"></div>
+    <button class="theme-btn" onclick="restartAnims()">&#8635; Replay</button>
+  </div>
+
+  <div class="stage">
+
+    <!-- ANDROID -->
+    <div class="phone-wrapper">
+      <div class="phone-label">
+        <span class="pill android">Android &middot; M3 Expressive</span>
+        <span class="desc">Spring overshoot. Setup 12px muted + payoff 16px bold. Outcome em plant-color.</span>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="icons">&#9650; &#9723;</span>
+          </div>
+          <div class="screen android-screen" id="a-screen"
+               style="--plant-color:#9B8FD4;--plant-color-rgb:155,143,212;--plant-glow:rgba(155,143,212,0.38);">
+            <div class="a-blob-1"></div>
+            <div class="a-blob-2"></div>
+            <div class="a-body" id="a-body">
+
+              <p class="a-conn anim-el" id="a-conn">Eu ouvi voc&ecirc;, Ana.</p>
+
+              <p class="a-title anim-el">O que vai mudar.</p>
+
+              <div class="a-plan-card anim-el">
+
+                <!-- Companion header -->
+                <div class="a-plan-header anim-el" id="a-plan-header">
+                  <div class="a-plant-emoji-lg" id="a-emoji"></div>
+                  <div class="a-plant-info">
+                    <div class="a-plant-name" id="a-name">Lavanda</div>
+                    <div class="a-plant-tags">
+                      <span class="a-plant-tag" id="a-tag1">Sens&iacute;vel</span>
+                      <span class="a-plant-tag" id="a-tag2">Reflexiva</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Promise 1: Protection (setup = trigger networks + time) -->
+                <div class="a-plan-row anim-el a-row-1">
+                  <span class="a-row-setup" id="a-setup1">Quando voc&ecirc; abrir o Instagram &agrave; noite</span>
+                  <span class="a-row-promise" id="a-promise1">Sua Lavanda aparece antes.</span>
+                </div>
+
+                <!-- Promise 2: Cycle Shield -->
+                <div class="a-plan-row anim-el a-row-2">
+                  <span class="a-row-setup">Nos seus dias mais sens&iacute;veis</span>
+                  <span class="a-row-promise">Estou mais perto quando voc&ecirc; mais precisa.</span>
+                </div>
+
+                <!-- Promise 3: Method (fixed — Feed Cleanse without the jargon) -->
+                <div class="a-plan-row anim-el a-row-3">
+                  <span class="a-row-setup">Nos pr&oacute;ximos 7 dias</span>
+                  <span class="a-row-promise">Limpamos juntas o que te machuca no feed.</span>
+                </div>
+
+                <!-- Promise 4: Outcome -->
+                <div class="a-plan-row anim-el a-row-4">
+                  <span class="a-row-setup" id="a-setup3">Em 2 semanas</span>
+                  <span class="a-row-promise promise-outcome" id="a-promise3">Voc&ecirc; vai se comparar menos.</span>
+                </div>
+
+                <!-- Promise 5: Community -->
+                <div class="a-plan-row anim-el a-row-5">
+                  <span class="a-row-setup">No Jardim</span>
+                  <span class="a-row-promise">Voc&ecirc; n&atilde;o vai estar sozinha.</span>
+                </div>
+
+              </div>
+
+              <p class="a-social anim-el">Mulheres com perfil similar relatam melhora em 2 semanas.</p>
+
+            </div>
+            <button class="a-cta anim-el" id="a-cta">Come&ccedil;ar meu plano &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- iOS -->
+    <div class="phone-wrapper">
+      <div class="phone-label">
+        <span class="pill ios">iOS 26+ &middot; Liquid Glass / HIG</span>
+        <span class="desc">Blur-to-focus sem overshoot. Setup SF Pro Text 12pt + payoff semibold 16pt.</span>
+      </div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="dynamic-island"></div>
+          <div class="screen ios-screen" id="ios-screen"
+               style="--plant-color:#9B8FD4;--plant-color-rgb:155,143,212;--plant-glow:rgba(155,143,212,0.38);">
+            <div class="ios-orb a"></div>
+            <div class="ios-orb b"></div>
+            <div class="ios-body" id="ios-body">
+
+              <p class="ios-conn anim-el" id="ios-conn">Eu ouvi voc&ecirc;, Ana.</p>
+
+              <p class="ios-title anim-el">O que vai mudar.</p>
+
+              <div class="ios-plan-card anim-el">
+
+                <!-- Companion header -->
+                <div class="ios-plan-header anim-el" id="ios-plan-header">
+                  <div class="ios-plant-emoji-lg" id="ios-emoji"></div>
+                  <div class="ios-plant-info">
+                    <div class="ios-plant-name" id="ios-name">Lavanda</div>
+                    <div class="ios-plant-tags">
+                      <span class="ios-plant-tag" id="ios-tag1">Sens&iacute;vel</span>
+                      <span class="ios-plant-tag" id="ios-tag2">Reflexiva</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Promise 1 -->
+                <div class="ios-plan-row anim-el ios-row-1">
+                  <span class="ios-row-setup" id="ios-setup1">Quando voc&ecirc; abrir o Instagram &agrave; noite</span>
+                  <span class="ios-row-promise" id="ios-promise1">Sua Lavanda aparece antes.</span>
+                </div>
+
+                <!-- Promise 2: Cycle Shield -->
+                <div class="ios-plan-row anim-el ios-row-2">
+                  <span class="ios-row-setup">Nos seus dias mais sens&iacute;veis</span>
+                  <span class="ios-row-promise">Estou mais perto quando voc&ecirc; mais precisa.</span>
+                </div>
+
+                <!-- Promise 3 -->
+                <div class="ios-plan-row anim-el ios-row-3">
+                  <span class="ios-row-setup">Nos pr&oacute;ximos 7 dias</span>
+                  <span class="ios-row-promise">Limpamos juntas o que te machuca no feed.</span>
+                </div>
+
+                <!-- Promise 4 -->
+                <div class="ios-plan-row anim-el ios-row-4">
+                  <span class="ios-row-setup" id="ios-setup3">Em 2 semanas</span>
+                  <span class="ios-row-promise promise-outcome" id="ios-promise3">Voc&ecirc; vai se comparar menos.</span>
+                </div>
+
+                <!-- Promise 5: Community -->
+                <div class="ios-plan-row anim-el ios-row-5">
+                  <span class="ios-row-setup">No Jardim</span>
+                  <span class="ios-row-promise">Voc&ecirc; n&atilde;o vai estar sozinha.</span>
+                </div>
+
+              </div>
+
+              <p class="ios-social anim-el">Mulheres com perfil similar relatam melhora em 2 semanas.</p>
+
+            </div>
+            <button class="ios-cta anim-el" id="ios-cta">Come&ccedil;ar meu plano &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /stage -->
+
+  <section class="annotations">
+    <div class="note android">
+      <h4>Android &middot; M3 Expressive</h4>
+      <ul>
+        <li><strong>Linguagem humana, n&atilde;o feature-labels.</strong> "Mirror ativo para" vira "Quando voc&ecirc; abrir o Instagram &agrave; noite / Sua Lavanda aparece antes." — a usuária entende o que vai acontecer, n&atilde;o o nome técnico. "Feed Cleanse" vira "Limpamos juntas o que te machuca no feed." Referencia <strong>Headspace</strong> (plan screen usa outcomes, n&atilde;o feature names).</li>
+        <li><strong>Setup + payoff por linha:</strong> 12px muted (o contexto dela) → 16px bold (o que acontece). Cria ritmo de leitura: primeiro reconhecimento ("sim, &eacute; isso que eu faço") depois promessa. Spring <code>(0.34,1.56,0.64,1)</code> com overshoot nas 3 linhas, delay escalonado 180ms. Referencia <strong>Finch</strong> (companion promises in plain language).</li>
+        <li><strong>Outcome em plant-color</strong>: "Voc&ecirc; vai se comparar menos." aparece na cor da planta dela — cria hierarquia emocional, a linha mais importante visualmente é a promessa final. Referencia <strong>Gentler Streak</strong> (2024 ADA — destaque da promessa em cor de marca).</li>
+        <li><strong>Social proof antes do CTA:</strong> "Mulheres com perfil similar relatam melhora em 2 semanas." — do roadmap, chega em 1.52s logo ap&oacute;s a terceira promessa. Converte ceticismo antes do "Começar meu plano →". Referencia <strong>Quittr</strong> (social proof at paywall entry).</li>
+      </ul>
+    </div>
+    <div class="note ios">
+      <h4>iOS 26+ &middot; Liquid Glass / HIG</h4>
+      <ul>
+        <li>Card: <code>backdrop-filter: blur(24px) saturate(160%)</code> + <code>rgba(255,255,255,0.05)</code> — regularMaterial can&ocirc;nico. <strong>N&atilde;o usa</strong> <code>.glassEffect()</code> no card (conte&uacute;do, n&atilde;o controle). Header tinted sem blur adicional. <code>cardInHIG</code>: blur-to-focus sem overshoot — signature HIG. Referencia <strong>Crouton</strong> (2024 ADA).</li>
+        <li>Setup: SF Pro Text 12pt wght:400 — Footnote style HIG. Payoff: SF Pro Text 16pt wght:600 — Body Emphasized. Tracking negativo (-0.28px) em body size is canonical HIG. Sem overshoot nas linhas — <code>(0.32,0.72,0,1)</code> padr&atilde;o. Referencia <strong>Things 3</strong>.</li>
+        <li>iOS n&atilde;o usa <code>font-variation-settings</code> (SF &eacute; system font com optical sizing autom&aacute;tico). Outcome em plant-color via CSS var — mesma hierarquia visual do Android, tipografia nativa. Referencia <strong>Day One</strong> (2024 ADA — plant-color accent para momento emocional).</li>
+        <li>CTA glass: <code>rgba(plant-color, 0.82)</code> + specular inset + box-shadow glow — padr&atilde;o aprovado em O1 e mantido. Atualizado por arqu&eacute;tipo via JS. Referencia <strong>Apple Music</strong> (iOS 26 Liquid Glass CTA).</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<script>
+var plantSVGs = {
+  Lavanda: '<svg viewBox="0 0 64 64" fill="none">'
+    +'<path d="M22 58C22 58 20 60 21.5 61.5C23 63 41 63 42.5 61.5C44 60 42 58 42 58" fill="#D4A574" opacity="0.85"/>'
+    +'<path d="M20 58H44" stroke="#B8885A" stroke-width="2.2" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="58" rx="12" ry="2.5" fill="#E8C4A0" opacity="0.5"/>'
+    +'<ellipse cx="32" cy="57" rx="10" ry="2" fill="#6BAF68" opacity="0.3"/>'
+    +'<path d="M32 56C32 56 31.5 48 31.8 42C32.2 36 32.5 30 32 25" stroke="#5C8F58" stroke-width="2.6" stroke-linecap="round"/>'
+    +'<path d="M32 40C28 38 24 36 21 28" stroke="#6BA068" stroke-width="2" stroke-linecap="round" opacity="0.9"/>'
+    +'<path d="M32 38C36 36 40 34 43 27" stroke="#6BA068" stroke-width="2" stroke-linecap="round" opacity="0.9"/>'
+    +'<path d="M32 48C27 47 22 47.5 19 50.5C22.5 50.7 27.5 49 32 48Z" fill="#7DB87A" opacity="0.85"/>'
+    +'<path d="M32 44C37 43 42 43.5 45 46C41.5 46.2 36.5 44.5 32 44Z" fill="#7DB87A" opacity="0.8"/>'
+    +'<ellipse cx="32" cy="22" rx="4" ry="5" fill="__CLR__"/>'
+    +'<ellipse cx="32" cy="17" rx="3.6" ry="4.4" fill="__CLR__" opacity="0.97"/>'
+    +'<ellipse cx="32" cy="12.5" rx="3.1" ry="3.8" fill="__CLR__" opacity="0.92"/>'
+    +'<ellipse cx="32" cy="8.5" rx="2.6" ry="3.2" fill="__CLR__" opacity="0.87"/>'
+    +'<ellipse cx="32" cy="5.2" rx="2" ry="2.4" fill="__CLR__" opacity="0.78"/>'
+    +'<ellipse cx="32" cy="3" rx="1.4" ry="1.6" fill="__CLR__" opacity="0.65"/>'
+    +'<ellipse cx="21" cy="26" rx="3.2" ry="4.2" fill="__CLR__" opacity="0.92"/>'
+    +'<ellipse cx="21" cy="21.5" rx="2.8" ry="3.6" fill="__CLR__" opacity="0.95"/>'
+    +'<ellipse cx="21" cy="17.5" rx="2.4" ry="3.2" fill="__CLR__" opacity="0.9"/>'
+    +'<ellipse cx="21" cy="14" rx="2" ry="2.7" fill="__CLR__" opacity="0.85"/>'
+    +'<ellipse cx="21" cy="11" rx="1.6" ry="2.2" fill="__CLR__" opacity="0.78"/>'
+    +'<ellipse cx="43" cy="25" rx="3.2" ry="4.2" fill="__CLR__" opacity="0.92"/>'
+    +'<ellipse cx="43" cy="20.5" rx="2.8" ry="3.6" fill="__CLR__" opacity="0.95"/>'
+    +'<ellipse cx="43" cy="16.5" rx="2.4" ry="3.2" fill="__CLR__" opacity="0.9"/>'
+    +'<ellipse cx="43" cy="13" rx="2" ry="2.7" fill="__CLR__" opacity="0.85"/>'
+    +'<ellipse cx="43" cy="10" rx="1.6" ry="2.2" fill="__CLR__" opacity="0.78"/>'
+    +'</svg>',
+
+  Girassol: '<svg viewBox="0 0 64 64" fill="none">'
+    +'<path d="M22 58C22 58 20 60 21.5 61.5C23 63 41 63 42.5 61.5C44 60 42 58 42 58" fill="#D4A574" opacity="0.85"/>'
+    +'<path d="M20 58H44" stroke="#B8885A" stroke-width="2.2" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="58" rx="12" ry="2.5" fill="#E8C4A0" opacity="0.5"/>'
+    +'<ellipse cx="32" cy="57" rx="10" ry="2" fill="#6BAF68" opacity="0.3"/>'
+    +'<path d="M32 56C32 52 31.5 46 32 42C32.5 38 32 36 32 34" stroke="#5A9E54" stroke-width="3.2" stroke-linecap="round"/>'
+    +'<path d="M32 46C29 45 24 45 20 47C21 48.5 25 48.5 29 47.5C31 47 32 46 32 46Z" fill="#7DB87A" opacity="0.88"/>'
+    +'<path d="M32 50C35 49 40 49 44 51C43 52.5 39 52.5 35 51.5C33 51 32 50 32 50Z" fill="#7DB87A" opacity="0.82"/>'
+    +'<ellipse cx="32" cy="3" rx="4.5" ry="10" fill="__CLR__"/>'
+    +'<ellipse cx="12" cy="20" rx="10" ry="4.5" fill="__CLR__"/>'
+    +'<ellipse cx="52" cy="20" rx="10" ry="4.5" fill="__CLR__"/>'
+    +'<ellipse cx="17" cy="8" rx="4" ry="9.5" fill="__CLR__" opacity="0.94" transform="rotate(-45 17 8)"/>'
+    +'<ellipse cx="47" cy="8" rx="4" ry="9.5" fill="__CLR__" opacity="0.94" transform="rotate(45 47 8)"/>'
+    +'<ellipse cx="17" cy="32" rx="4" ry="9.5" fill="__CLR__" opacity="0.6" transform="rotate(45 17 32)"/>'
+    +'<ellipse cx="47" cy="32" rx="4" ry="9.5" fill="__CLR__" opacity="0.6" transform="rotate(-45 47 32)"/>'
+    +'<circle cx="32" cy="20" r="10.5" fill="#D4960A"/>'
+    +'<circle cx="32" cy="20" r="8.5" fill="#C48A08"/>'
+    +'<circle cx="32" cy="20" r="6" fill="#A87000" opacity="0.6"/>'
+    +'<circle cx="32" cy="20" r="10.5" stroke="#9C6500" stroke-width="1.4" fill="none" opacity="0.5"/>'
+    +'<circle cx="29" cy="18.5" r="1.4" fill="#5A3800"/>'
+    +'<circle cx="35" cy="18.5" r="1.4" fill="#5A3800"/>'
+    +'<circle cx="29" cy="18" r="0.55" fill="white" opacity="0.8"/>'
+    +'<circle cx="35" cy="18" r="0.55" fill="white" opacity="0.8"/>'
+    +'<path d="M30 22.5C30.8 23.6 33.2 23.6 34 22.5" stroke="#5A3800" stroke-width="1.1" stroke-linecap="round" fill="none"/>'
+    +'<circle cx="26.5" cy="21" r="2" fill="#F4A7B9" opacity="0.3"/>'
+    +'<circle cx="37.5" cy="21" r="2" fill="#F4A7B9" opacity="0.3"/>'
+    +'</svg>',
+
+  Cacto: '<svg viewBox="0 0 64 64" fill="none">'
+    +'<path d="M19.5 55C19 57 19.5 59.5 21 61C22.5 62.5 41.5 62.5 43 61C44.5 59.5 45 57 44.5 55" fill="#D4A574" opacity="0.88"/>'
+    +'<path d="M18.5 55H45.5" stroke="#B8885A" stroke-width="2.2" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="55" rx="13.5" ry="2.5" fill="#E8C4A0" opacity="0.6"/>'
+    +'<ellipse cx="32" cy="57" rx="5" ry="1.5" fill="#C49464" opacity="0.15"/>'
+    +'<path d="M23.5 55C23 48 22 42 22 36C22 28 23 20 24.5 14.5C26 9 28 6 32 6C36 6 38 9 39.5 14.5C41 20 42 28 42 36C42 42 41 48 40.5 55" fill="__CLR__" opacity="0.5"/>'
+    +'<path d="M23.5 55C23 48 22 42 22 36C22 28 23 20 24.5 14.5C26 9 28 6 32 6C36 6 38 9 39.5 14.5C41 20 42 28 42 36C42 42 41 48 40.5 55" stroke="__CLR__" stroke-width="2.4" fill="none"/>'
+    +'<path d="M26.5 9C26 16 25.8 26 26 36C26.2 44 26.5 50 26.8 55" stroke="__CLR__" stroke-width="0.9" opacity="0.3" stroke-linecap="round"/>'
+    +'<path d="M32 7C32 14 32 26 32 36C32 44 32 50 32 55" stroke="__CLR__" stroke-width="0.9" opacity="0.3" stroke-linecap="round"/>'
+    +'<path d="M37.5 9C38 16 38.2 26 38 36C37.8 44 37.5 50 37.2 55" stroke="__CLR__" stroke-width="0.9" opacity="0.3" stroke-linecap="round"/>'
+    +'<path d="M22 35C22 35 18 35 14.5 33C11 31 9 26.5 9 22C9 17 11.5 15 13.5 16.5C15.5 18 16.5 21.5 16.5 26C16.5 30.5 17.5 33 22 35" fill="__CLR__" opacity="0.45"/>'
+    +'<path d="M22 35C22 35 18 35 14.5 33C11 31 9 26.5 9 22C9 17 11.5 15 13.5 16.5C15.5 18 16.5 21.5 16.5 26C16.5 30.5 17.5 33 22 35" stroke="__CLR__" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    +'<path d="M42 29C42 29 46 29 49.5 27C53 25 55 21 55 16.5C55 11.5 52.5 9.5 50.5 11C48.5 12.5 47.5 16 47.5 20.5C47.5 25 46.5 27 42 29" fill="__CLR__" opacity="0.45"/>'
+    +'<path d="M42 29C42 29 46 29 49.5 27C53 25 55 21 55 16.5C55 11.5 52.5 9.5 50.5 11C48.5 12.5 47.5 16 47.5 20.5C47.5 25 46.5 27 42 29" stroke="__CLR__" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    +'<line x1="22" y1="18" x2="19.5" y2="16.5" stroke="__CLR__" stroke-width="1.3" stroke-linecap="round" opacity="0.65"/>'
+    +'<line x1="42" y1="16" x2="44.5" y2="14.5" stroke="__CLR__" stroke-width="1.3" stroke-linecap="round" opacity="0.65"/>'
+    +'<line x1="22" y1="28" x2="19.5" y2="28.5" stroke="__CLR__" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>'
+    +'<line x1="42" y1="35" x2="44.5" y2="35.5" stroke="__CLR__" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>'
+    +'<ellipse cx="32" cy="4.5" rx="6" ry="5" fill="#F4A7B9" opacity="0.92"/>'
+    +'<ellipse cx="27.5" cy="3.5" rx="4.2" ry="3.2" fill="#F4C0D0" opacity="0.82" transform="rotate(-18 27.5 3.5)"/>'
+    +'<ellipse cx="36.5" cy="3.5" rx="4.2" ry="3.2" fill="#F4C0D0" opacity="0.82" transform="rotate(18 36.5 3.5)"/>'
+    +'<circle cx="32" cy="4.8" r="3" fill="#E8889E" opacity="0.88"/>'
+    +'<circle cx="32" cy="4.8" r="1.8" fill="#C96078" opacity="0.72"/>'
+    +'</svg>',
+
+  Cerejeira: '<svg viewBox="0 0 64 64" fill="none">'
+    +'<path d="M22 58C22 58 20 60 21.5 61.5C23 63 41 63 42.5 61.5C44 60 42 58 42 58" fill="#8B6B52" opacity="0.8"/>'
+    +'<path d="M20 58H44" stroke="#7A5840" stroke-width="2.5" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="57" rx="10" ry="2" fill="#6BAF68" opacity="0.35"/>'
+    +'<path d="M32 56C32 52 30 48 28 44C26 40 27 36 30 34C33 32 34 30 33 28" stroke="#6B4E38" stroke-width="4" stroke-linecap="round"/>'
+    +'<path d="M32 56C32 52 30 48 28 44C26 40 27 36 30 34C33 32 34 30 33 28" stroke="#8B6B52" stroke-width="2.5" stroke-linecap="round"/>'
+    +'<path d="M28 44C24 42 20 40 16 39C13 38.5 10 39 9 40" stroke="#7A5840" stroke-width="2.8" stroke-linecap="round"/>'
+    +'<path d="M30 36C34 34 38 32 42 30C45 28.5 48 28 50 29" stroke="#7A5840" stroke-width="2.5" stroke-linecap="round"/>'
+    +'<path d="M33 28C35 24 38 20 40 17C42 14 43 12 42 10" stroke="#7A5840" stroke-width="2.2" stroke-linecap="round"/>'
+    +'<ellipse cx="11" cy="36" rx="6" ry="5" fill="__CLR__" opacity="0.88"/>'
+    +'<ellipse cx="16" cy="34" rx="5.5" ry="4.5" fill="__CLR__" opacity="0.85"/>'
+    +'<ellipse cx="8" cy="33" rx="5" ry="4.2" fill="__CLR__" opacity="0.8"/>'
+    +'<ellipse cx="13" cy="31" rx="4.5" ry="4" fill="__CLR__" opacity="0.82"/>'
+    +'<circle cx="12" cy="35" r="2.2" fill="#C95578" opacity="0.78"/>'
+    +'<ellipse cx="50" cy="26" rx="6" ry="5" fill="__CLR__" opacity="0.9"/>'
+    +'<ellipse cx="54" cy="24" rx="5.5" ry="4.5" fill="__CLR__" opacity="0.87"/>'
+    +'<ellipse cx="47" cy="23.5" rx="5" ry="4.2" fill="__CLR__" opacity="0.83"/>'
+    +'<circle cx="51" cy="26" r="2.4" fill="#C95578" opacity="0.8"/>'
+    +'<ellipse cx="42" cy="9" rx="5.5" ry="5" fill="__CLR__" opacity="0.92"/>'
+    +'<ellipse cx="38" cy="7" rx="5" ry="4.5" fill="__CLR__" opacity="0.88"/>'
+    +'<ellipse cx="45" cy="6.5" rx="4.8" ry="4" fill="__CLR__" opacity="0.85"/>'
+    +'<circle cx="41" cy="9" r="2.5" fill="#C95578" opacity="0.82"/>'
+    +'<ellipse cx="24" cy="22" rx="2" ry="1.3" fill="__CLR__" opacity="0.55" transform="rotate(-20 24 22)"/>'
+    +'<ellipse cx="20" cy="50" rx="1.7" ry="1.1" fill="__CLR__" opacity="0.42" transform="rotate(-30 20 50)"/>'
+    +'</svg>',
+
+  Lotus: '<svg viewBox="0 0 64 64" fill="none">'
+    +'<circle cx="32" cy="34" r="26" fill="__CLR__" opacity="0.07"/>'
+    +'<circle cx="32" cy="30" r="17" fill="__CLR__" opacity="0.09"/>'
+    +'<path d="M20 58C20 58 22 62 26.5 63C31 64 33 64 37.5 63C42 62 44 58 44 58" fill="#D4A574"/>'
+    +'<path d="M20 58C20 58 22 62 26.5 63C31 64 33 64 37.5 63C42 62 44 58 44 58" stroke="#C4956A" stroke-width="1.2" fill="none"/>'
+    +'<path d="M18 58H46" stroke="#C4956A" stroke-width="1.8" stroke-linecap="round"/>'
+    +'<ellipse cx="32" cy="57" rx="11" ry="3" fill="#D4EEF8" opacity="0.55"/>'
+    +'<ellipse cx="25" cy="56" rx="4.5" ry="1.8" fill="#7EC47A" opacity="0.5"/>'
+    +'<ellipse cx="39" cy="55.5" rx="4" ry="1.6" fill="#7EC47A" opacity="0.42"/>'
+    +'<path d="M32 54Q31 49 32 43" stroke="#6EAA68" stroke-width="1.8" stroke-linecap="round" opacity="0.55" fill="none"/>'
+    +'<path d="M32 42Q20 44 13 39Q11 37 15 36Q22 36 32 40Z" fill="__CLR__" opacity="0.3"/>'
+    +'<path d="M32 42Q44 44 51 39Q53 37 49 36Q42 36 32 40Z" fill="__CLR__" opacity="0.3"/>'
+    +'<path d="M32 42Q18 38 14 31Q13 28 17 29Q24 31 32 39Z" fill="__CLR__" opacity="0.34"/>'
+    +'<path d="M32 42Q46 38 50 31Q51 28 47 29Q40 31 32 39Z" fill="__CLR__" opacity="0.34"/>'
+    +'<path d="M32 38Q22 36 18 29Q17 26 21 27Q26 29 32 36Z" fill="#E8CCE8" opacity="0.52"/>'
+    +'<path d="M32 38Q42 36 46 29Q47 26 43 27Q38 29 32 36Z" fill="#E8CCE8" opacity="0.52"/>'
+    +'<path d="M32 37Q23 33 20 26Q19.5 23 23.5 24.5Q27 27 32 34Z" fill="__CLR__" opacity="0.48"/>'
+    +'<path d="M32 37Q41 33 44 26Q44.5 23 40.5 24.5Q37 27 32 34Z" fill="__CLR__" opacity="0.48"/>'
+    +'<path d="M32 35Q26 30 24 22Q23.5 17 27 19Q30 23 32 33Z" fill="#EEE0F0" opacity="0.62"/>'
+    +'<path d="M32 35Q38 30 40 22Q40.5 17 37 19Q34 23 32 33Z" fill="#EEE0F0" opacity="0.62"/>'
+    +'<path d="M32 33Q28 28 27 20Q27 15 30 18Q31 22 32 31Z" fill="__CLR__" opacity="0.64"/>'
+    +'<path d="M32 33Q36 28 37 20Q37 15 34 18Q33 22 32 31Z" fill="__CLR__" opacity="0.64"/>'
+    +'<path d="M32 30Q29.5 25 29.5 16Q29.5 10 32 13Q33 17 32 28Z" fill="#F4E8F4" opacity="0.72"/>'
+    +'<path d="M32 30Q34.5 25 34.5 16Q34.5 10 32 13Q31 17 32 28Z" fill="#F4E8F4" opacity="0.72"/>'
+    +'<path d="M32 24Q31 18 31.2 11Q31.5 7 32 5Q32.5 7 32.8 11Q33 18 32 24Z" fill="__CLR__" opacity="0.85"/>'
+    +'<ellipse cx="32" cy="38" rx="5" ry="3.5" fill="#FFE082" opacity="0.95"/>'
+    +'<ellipse cx="32" cy="38" rx="3.5" ry="2.4" fill="#FFC837" opacity="0.85"/>'
+    +'<circle cx="31" cy="37.3" r="0.7" fill="#E6960A" opacity="0.55"/>'
+    +'<circle cx="33" cy="37.3" r="0.7" fill="#E6960A" opacity="0.55"/>'
+    +'<circle cx="32" cy="36.2" r="0.7" fill="#E6960A" opacity="0.5"/>'
+    +'<circle cx="11" cy="20" r="1.1" fill="white" opacity="0.5"/>'
+    +'<circle cx="11" cy="20" r="0.45" fill="white" opacity="0.85"/>'
+    +'<circle cx="53" cy="18" r="0.9" fill="white" opacity="0.42"/>'
+    +'<circle cx="53" cy="18" r="0.38" fill="white" opacity="0.78"/>'
+    +'<circle cx="22" cy="28" r="1.4" fill="white" opacity="0.32"/>'
+    +'<circle cx="22" cy="28" r="0.6" fill="white" opacity="0.62"/>'
+    +'<circle cx="42" cy="26" r="1.2" fill="white" opacity="0.27"/>'
+    +'<circle cx="42" cy="26" r="0.5" fill="white" opacity="0.57"/>'
+    +'</svg>'
+};
+
+var states = {
+  s1: {
+    name: 'Ana', plant: 'Lavanda',
+    color: '#9B8FD4', colorRgb: '155,143,212',
+    glow: 'rgba(155,143,212,0.38)', ctaRgba: 'rgba(155,143,212,0.82)',
+    tag1: 'Sens\u00edvel', tag2: 'Reflexiva',
+    setup1:   'Quando voc\u00ea abrir o Instagram \u00e0 noite',
+    promise1: 'Sua Lavanda aparece antes.',
+    promise3: 'Voc\u00ea vai se comparar menos.'
+  },
+  s2: {
+    name: 'Bia', plant: 'Girassol',
+    color: '#E8A830', colorRgb: '232,168,48',
+    glow: 'rgba(232,168,48,0.38)', ctaRgba: 'rgba(232,168,48,0.82)',
+    tag1: 'Energ\u00edca', tag2: 'Visual',
+    setup1:   'Quando voc\u00ea abrir o TikTok de manh\u00e3',
+    promise1: 'Seu Girassol aparece antes.',
+    promise3: 'Voc\u00ea vai se sentir melhor sobre seu corpo.'
+  },
+  s3: {
+    name: 'Carol', plant: 'Cacto',
+    color: '#6BAF7A', colorRgb: '107,175,122',
+    glow: 'rgba(107,175,122,0.38)', ctaRgba: 'rgba(107,175,122,0.82)',
+    tag1: 'Direta', tag2: 'Independente',
+    setup1:   'Quando voc\u00ea abrir o Instagram nos intervalos',
+    promise1: 'Seu Cacto aparece antes.',
+    promise3: 'Voc\u00ea vai usar as redes com mais inten\u00e7\u00e3o.'
+  },
+  s4: {
+    name: 'Dani', plant: 'Cerejeira',
+    color: '#E88DA8', colorRgb: '232,141,168',
+    glow: 'rgba(232,141,168,0.38)', ctaRgba: 'rgba(232,141,168,0.82)',
+    tag1: 'Afetuosa', tag2: 'Nostalgica',
+    setup1:   'Quando voc\u00ea abrir o Pinterest antes de dormir',
+    promise1: 'Sua Cerejeira aparece antes.',
+    promise3: 'Voc\u00ea vai se aceitar mais a cada dia.'
+  },
+  s5: {
+    name: 'Eva', plant: 'Lotus',
+    color: '#B89CD8', colorRgb: '184,156,216',
+    glow: 'rgba(184,156,216,0.38)', ctaRgba: 'rgba(184,156,216,0.82)',
+    tag1: 'Calma', tag2: 'Introspectiva',
+    setup1:   'Quando voc\u00ea abrir o TikTok depois do almo\u00e7o',
+    promise1: 'Sua Lotus aparece antes.',
+    promise3: 'Voc\u00ea vai descansar de verdade.'
+  }
+};
+
+var currentState = 's1';
+
+function setText(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function setSVG(id, plantName, color) {
+  var el = document.getElementById(id);
+  if (!el || !plantSVGs[plantName]) return;
+  el.innerHTML = plantSVGs[plantName].replace(/__CLR__/g, color);
+}
+
+function setState(s) {
+  currentState = s;
+  document.querySelectorAll('.state-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.s === s);
+  });
+
+  var st = states[s];
+
+  ['a-screen', 'ios-screen'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.style.setProperty('--plant-color', st.color);
+    el.style.setProperty('--plant-color-rgb', st.colorRgb);
+    el.style.setProperty('--plant-glow', st.glow);
+  });
+
+  // Set SVG plants on both sides
+  setSVG('a-emoji', st.plant, st.color);
+  setSVG('ios-emoji', st.plant, st.color);
+
+  ['a', 'ios'].forEach(function(p) {
+    setText(p + '-conn',     'Eu ouvi voc\u00ea, ' + st.name + '.');
+    setText(p + '-name',     st.plant);
+    setText(p + '-tag1',     st.tag1);
+    setText(p + '-tag2',     st.tag2);
+    setText(p + '-setup1',   st.setup1);
+    setText(p + '-promise1', st.promise1);
+    setText(p + '-promise3', st.promise3);
+
+    var cta = document.getElementById(p + '-cta');
+    if (cta) {
+      cta.style.background = st.ctaRgba;
+      cta.style.boxShadow  = 'inset 0 1px 0 rgba(255,255,255,0.30),inset 0 -1px 0 rgba(0,0,0,0.10),0 4px 28px ' + st.glow;
+    }
+  });
+
+  restartAnims();
+}
+
+function restartAnims() {
+  ['a-body', 'ios-body'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('reinit');
+    el.offsetWidth;
+    setTimeout(function() { el.classList.remove('reinit'); }, 30);
+  });
+}
+
+setState('s1');
+</script>
+</body>
+</html>

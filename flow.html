@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brota — Flow Completo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand-real: #F4A7B9;
+  --brand-real-deep: #E8889E;
+  --bg: #FFF8F2;
+  --text: #3D2C2E;
+  --text2: #9B8A8C;
+  --nav-h: 64px;
+}
+
+html, body {
+  height: 100%;
+  background: #1A1418;
+  font-family: 'Nunito', -apple-system, sans-serif;
+  overflow: hidden;
+}
+
+/* ── IFRAME ── */
+#viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--nav-h));
+  border: none;
+  background: #FFF8F2;
+}
+
+/* ── NAV BAR ── */
+#nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  background: rgba(26,20,24,0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(244,167,185,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 12px;
+  z-index: 100;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid rgba(244,167,185,0.30);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--brand-real);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.nav-btn:hover {
+  background: rgba(244,167,185,0.12);
+  border-color: var(--brand-real);
+  transform: scale(1.06);
+}
+
+.nav-btn:active {
+  transform: scale(0.92);
+  background: rgba(244,167,185,0.20);
+}
+
+.nav-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+  transform: none;
+}
+
+#nav-info {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+#nav-counter {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(244,167,185,0.55);
+}
+
+#nav-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,248,242,0.88);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* ── DOT TRACK ── */
+#nav-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  max-width: 140px;
+  padding: 4px 0;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(244,167,185,0.25);
+  flex-shrink: 0;
+  transition: all 0.32s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.dot.active {
+  background: var(--brand-real);
+  width: 18px;
+  border-radius: 999px;
+}
+
+.dot.near {
+  background: rgba(244,167,185,0.50);
+  width: 6px;
+  height: 6px;
+}
+
+/* ── LOADING ── */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  bottom: var(--nav-h);
+  background: #FFF8F2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+}
+
+#loading-overlay.hidden {
+  opacity: 0;
+}
+
+.loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-real);
+  animation: ldot 1.2s ease-in-out infinite;
+  margin: 0 4px;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes ldot {
+  0%,100% { opacity: 0.3; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+</style>
+</head>
+<body>
+
+<iframe id="viewer" title="Brota screen"></iframe>
+
+<div id="loading-overlay">
+  <div class="loading-dot"></div>
+  <div class="loading-dot"></div>
+  <div class="loading-dot"></div>
+</div>
+
+<nav id="nav">
+  <button class="nav-btn" id="btn-prev" aria-label="Anterior">&#8592;</button>
+
+  <div id="nav-info">
+    <div id="nav-counter">1 / 20</div>
+    <div id="nav-title">Splash</div>
+    <div id="nav-dots"></div>
+  </div>
+
+  <button class="nav-btn" id="btn-next" aria-label="Proxima">&#8594;</button>
+</nav>
+
+<script>
+var SCREENS = [
+  { file: '00-splash.html',        label: 'S0 — Splash' },
+  { file: '01-hook.html',          label: 'O1 — Abertura' },
+  { file: '02-hook.html',          label: 'O2 — Hook' },
+  { file: '03-validation.html',    label: 'O3 — Nome' },
+  { file: '04-redes.html',         label: 'O4 — Redes' },
+  { file: '05-gatilhos.html',      label: 'O5 — Gatilhos' },
+  { file: '06-tempo.html',         label: 'O6 — Tempo' },
+  { file: '07-impacto.html',       label: 'O7 — Impacto' },
+  { file: '08-insights.html',      label: 'O8 — Insights' },
+  { file: '09-planta.html',        label: 'O9 — Planta' },
+  { file: '10-brota.html',         label: 'O10 — Brota' },
+  { file: '11-arquetipo.html',     label: 'O11 — Arquetipo' },
+  { file: '12-bonding.html',       label: 'O12 — Bonding' },
+  { file: '13-horario.html',       label: 'O13 — Horario' },
+  { file: '14a-ciclo-insight.html',label: 'O14A — Ciclo Insight' },
+  { file: '14b-ciclo-optin.html',  label: 'O14B — Ciclo Opt-in' },
+  { file: '15-goal.html',          label: 'O15 — Goal' },
+  { file: '16-loading.html',       label: 'O16 — Loading' },
+  { file: '17-plano.html',         label: 'O17 — Plano' },
+  { file: '18-paywall-v2.html',    label: 'O18 — Paywall' }
+];
+
+var current = 0;
+var total = SCREENS.length;
+
+var iframe = document.getElementById('viewer');
+var overlay = document.getElementById('loading-overlay');
+var btnPrev = document.getElementById('btn-prev');
+var btnNext = document.getElementById('btn-next');
+var navCounter = document.getElementById('nav-counter');
+var navTitle = document.getElementById('nav-title');
+var navDots = document.getElementById('nav-dots');
+
+/* ── BUILD DOTS ── */
+function buildDots() {
+  navDots.innerHTML = '';
+  for (var i = 0; i < total; i++) {
+    var d = document.createElement('div');
+    d.className = 'dot';
+    d.dataset.idx = i;
+    (function(idx) {
+      d.addEventListener('click', function() { navigate(idx); });
+    })(i);
+    navDots.appendChild(d);
+  }
+}
+
+function updateDots() {
+  var dots = navDots.querySelectorAll('.dot');
+  dots.forEach(function(d, i) {
+    d.classList.remove('active', 'near');
+    var diff = Math.abs(i - current);
+    if (diff === 0) d.classList.add('active');
+    else if (diff === 1) d.classList.add('near');
+  });
+}
+
+/* ── NAVIGATE ── */
+function navigate(idx) {
+  if (idx < 0 || idx >= total || idx === current) return;
+  current = idx;
+  loadScreen();
+}
+
+function loadScreen() {
+  var s = SCREENS[current];
+
+  // Show loading
+  overlay.classList.remove('hidden');
+
+  // Update nav info
+  navCounter.textContent = (current + 1) + ' / ' + total;
+  navTitle.textContent = s.label;
+  btnPrev.disabled = (current === 0);
+  btnNext.disabled = (current === total - 1);
+
+  updateDots();
+
+  // Load iframe
+  iframe.src = s.file;
+}
+
+/* ── IFRAME LOADED ── */
+iframe.addEventListener('load', function() {
+  overlay.classList.add('hidden');
+  // Scroll iframe to center the first .phone element
+  try {
+    var doc = iframe.contentDocument || iframe.contentWindow.document;
+    var phone = doc.querySelector('.phone');
+    if (phone) {
+      phone.scrollIntoView({ block: 'center', behavior: 'instant' });
+    }
+  } catch(e) {
+    // file:// cross-origin fallback — won't scroll
+  }
+});
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    if (current < total - 1) navigate(current + 1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    if (current > 0) navigate(current - 1);
+  }
+});
+
+/* ── BUTTON CLICKS ── */
+btnPrev.addEventListener('click', function() {
+  if (current > 0) navigate(current - 1);
+});
+
+btnNext.addEventListener('click', function() {
+  if (current < total - 1) navigate(current + 1);
+});
+
+/* ── SWIPE ── */
+var touchStartX = 0;
+var touchStartY = 0;
+
+document.addEventListener('touchstart', function(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchStartX;
+  var dy = e.changedTouches[0].clientY - touchStartY;
+  // Only horizontal swipes that are clearly horizontal
+  if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    if (dx < 0 && current < total - 1) navigate(current + 1);
+    else if (dx > 0 && current > 0) navigate(current - 1);
+  }
+}, { passive: true });
+
+/* ── INIT ── */
+buildDots();
+loadScreen();
+</script>
+</body>
+</html>
