@@ -14,18 +14,14 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; background: #FFF8F2; -webkit-tap-highlight-color: transparent; }
 
-/* ── CHOOSER ── */
 #chooser {
   position: fixed; inset: 0; z-index: 200;
   background: #FFF8F2;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 32px; padding: 32px;
-  transition: opacity 0.45s ease, transform 0.45s ease;
+  transition: opacity 0.25s ease;
 }
-#chooser.out {
-  opacity: 0; transform: scale(1.06);
-  pointer-events: none;
-}
+#chooser.out { opacity: 0; pointer-events: none; }
 
 .ch-wordmark {
   font-family: 'Instrument Serif', serif; font-style: italic;
@@ -35,38 +31,33 @@ html, body { height: 100%; overflow: hidden; background: #FFF8F2; -webkit-tap-hi
 .ch-sub {
   font-family: 'Nunito', sans-serif;
   font-size: 14px; font-weight: 600; color: #9B8A8C;
-  letter-spacing: 0.04em; margin-top: -12px;
+  margin-top: -12px;
 }
-
 .ch-btns { display: flex; gap: 14px; margin-top: 12px; }
 .ch-btn {
   padding: 16px 36px; border-radius: 999px; border: none;
   font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
   color: white; cursor: pointer;
-  transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.2s ease;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 .ch-btn:active { transform: scale(0.94); }
 .ch-btn.android { background: linear-gradient(135deg, #34A853, #4285F4); }
 .ch-btn.ios { background: linear-gradient(135deg, #1C1C1E, #48484A); }
 
-/* ── IFRAME ── */
 #viewer {
   position: fixed; inset: 0; width: 100%; height: 100%;
   border: none; z-index: 1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
-#viewer.on { opacity: 1; }
 
-/* ── FADE ── */
 #fade {
   position: fixed; inset: 0; z-index: 50;
   background: #FFF8F2;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.28s ease;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
 }
 #fade.on { opacity: 1; }
+#fade.off { opacity: 0; }
 </style>
 </head>
 <body>
@@ -81,185 +72,180 @@ html, body { height: 100%; overflow: hidden; background: #FFF8F2; -webkit-tap-hi
 </div>
 
 <iframe id="viewer" title="Brota"></iframe>
-<div id="fade"></div>
+<div id="fade" class="on"></div>
 
 <script>
-/* ══════════════════════════════════════════════
-   CONFIG
-   ══════════════════════════════════════════════ */
 var SCREENS = [
-  '00-splash.html',
-  '01-hook.html',
-  '02-hook.html',
-  '03-validation.html',
-  '04-redes.html',
-  '05-gatilhos.html',
-  '06-tempo.html',
-  '07-impacto.html',
-  '08-insights.html',
-  '09-planta.html',
-  '10-brota.html',
-  '11-arquetipo.html',
-  '12-bonding.html',
-  '13-horario.html',
-  '14a-ciclo-insight.html',
-  '14b-ciclo-optin.html',
-  '15-goal.html',
-  '16-loading.html',
-  '17-plano.html',
-  '18-paywall-v2.html'
+  '00-splash.html','01-hook.html','02-hook.html','03-validation.html',
+  '04-redes.html','05-gatilhos.html','06-tempo.html','07-impacto.html',
+  '08-insights.html','09-planta.html','10-brota.html','11-arquetipo.html',
+  '12-bonding.html','13-horario.html','14a-ciclo-insight.html',
+  '14b-ciclo-optin.html','15-goal.html','16-loading.html',
+  '17-plano.html','18-paywall-v2.html'
 ];
 
-/* Screens that auto-advance (index: delay ms) */
-var AUTO = { 0: 3800, 1: 7500, 17: 7000 };
+var AUTO = { 0: 2500, 1: 5000, 17: 5000 };
 
-/* ══════════════════════════════════════════════
-   CSS INJECTION — hides studio chrome, makes phone fullscreen
-   ══════════════════════════════════════════════ */
-var CSS_BASE = [
-  'html,body{height:100%!important;overflow:hidden!important;margin:0!important;padding:0!important;background:#FFF8F2!important}',
-  'body::before{display:none!important}',
-  '.studio-header,.annotations,.phone-label,.controls-col,.timing-legend,.state-toggle{display:none!important}',
-  '.stage{position:fixed!important;inset:0!important;padding:0!important;margin:0!important;display:block!important}',
-  '.phone-wrapper{width:100%!important;height:100%!important;display:block!important}',
-  '.phone{width:100%!important;height:100%!important;border-radius:0!important;padding:0!important;box-shadow:none!important;background:transparent!important}',
-  '.phone-screen{border-radius:0!important;width:100%!important;height:100%!important}'
-].join('\n');
+/* CSS to strip all studio chrome and make the phone screen fill the viewport */
+var CSS_SHARED = `
+html, body {
+  height: 100% !important; overflow: hidden !important;
+  margin: 0 !important; padding: 0 !important;
+  background: #FFF8F2 !important;
+}
+body::before { display: none !important; }
+.studio-header, .annotations, .phone-label, .controls-col,
+.timing-legend, .state-toggle, .controls-row {
+  display: none !important;
+}
+.status-bar, .dynamic-island {
+  display: none !important;
+}
+.stage {
+  position: fixed !important; inset: 0 !important;
+  padding: 0 !important; margin: 0 !important;
+  display: block !important;
+}
+.phone-wrapper {
+  width: 100% !important; height: 100% !important;
+  display: block !important;
+}
+.phone {
+  width: 100% !important; height: 100% !important;
+  border-radius: 0 !important; padding: 0 !important;
+  box-shadow: none !important; background: transparent !important;
+}
+.phone-screen {
+  border-radius: 0 !important;
+  width: 100% !important; height: 100% !important;
+}
+.screen {
+  touch-action: manipulation;
+}
+`;
 
-var CSS_ANDROID = '\n.phone-wrapper+.phone-wrapper{display:none!important}';
-var CSS_IOS = '\n.stage>.phone-wrapper:first-child{display:none!important}';
+var CSS_ANDROID = '.phone-wrapper + .phone-wrapper { display: none !important; }';
+var CSS_IOS = '.stage > .phone-wrapper:first-child { display: none !important; }';
 
-/* ══════════════════════════════════════════════
-   STATE
-   ══════════════════════════════════════════════ */
 var platform = 'android';
 var current = 0;
 var busy = false;
 var autoTmr = null;
+var observer = null;
 
 var iframe  = document.getElementById('viewer');
 var fade    = document.getElementById('fade');
 var chooser = document.getElementById('chooser');
 
-/* ══════════════════════════════════════════════
-   START
-   ══════════════════════════════════════════════ */
 function start(p) {
   platform = p;
   chooser.classList.add('out');
   setTimeout(function() {
     chooser.style.display = 'none';
-    iframe.classList.add('on');
     loadScreen();
-  }, 450);
+  }, 250);
 }
 
-/* ══════════════════════════════════════════════
-   NAVIGATION
-   ══════════════════════════════════════════════ */
 function goNext() {
   if (busy || current >= SCREENS.length - 1) return;
-  transition(current + 1);
+  go(current + 1);
 }
-
 function goPrev() {
   if (busy || current <= 0) return;
-  transition(current - 1);
+  go(current - 1);
 }
 
-function transition(idx) {
+function go(idx) {
   busy = true;
   clearTimeout(autoTmr);
-  fade.classList.add('on');
+  if (observer) { observer.disconnect(); observer = null; }
+  fade.className = 'on';
   setTimeout(function() {
     current = idx;
     loadScreen();
-  }, 280);
+  }, 150);
 }
 
 function loadScreen() {
   iframe.src = SCREENS[current];
 }
 
-/* ══════════════════════════════════════════════
-   IFRAME LOADED — inject CSS, hook events
-   ══════════════════════════════════════════════ */
 iframe.addEventListener('load', function() {
   try {
     var doc = iframe.contentDocument;
-    if (!doc) throw 'no doc';
+    if (!doc || !doc.head) throw 0;
 
     /* Inject fullscreen CSS */
     var s = doc.createElement('style');
-    s.textContent = CSS_BASE + (platform === 'android' ? CSS_ANDROID : CSS_IOS);
+    s.textContent = CSS_SHARED + '\n' + (platform === 'android' ? CSS_ANDROID : CSS_IOS);
     doc.head.appendChild(s);
 
-    /* Hook CTA buttons → advance on click */
-    var sel = platform === 'android'
-      ? '.a-cta, button[class*="a-cta"], .a-continue'
-      : '.ios-cta, button[class*="ios-cta"], .ios-continue';
-    var ctas = doc.querySelectorAll(sel);
-    ctas.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        setTimeout(goNext, 600);
-      });
-    });
+    /* Hook all CTA buttons for advancing */
+    hookCTAs(doc);
 
-    /* Also hook any generic .cta-btn or data-next buttons */
-    doc.querySelectorAll('[data-next], .cta-next').forEach(function(btn) {
-      btn.addEventListener('click', function() { setTimeout(goNext, 600); });
-    });
+    /* Watch for dynamically-shown CTAs (e.g. after user selects an option) */
+    observer = new MutationObserver(function() { hookCTAs(doc); });
+    observer.observe(doc.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
 
-    /* Swipe: left → next, right → prev */
+    /* Swipe inside iframe */
     var sx = 0, sy = 0;
     doc.addEventListener('touchstart', function(e) {
-      sx = e.touches[0].clientX;
-      sy = e.touches[0].clientY;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
     }, { passive: true });
-
     doc.addEventListener('touchend', function(e) {
       var dx = e.changedTouches[0].clientX - sx;
       var dy = e.changedTouches[0].clientY - sy;
-      if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-        if (dx < 0) goNext();
-        else goPrev();
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+        if (dx < 0) goNext(); else goPrev();
       }
     }, { passive: true });
 
-  } catch(e) {
-    /* cross-origin: swipe on parent as fallback */
+  } catch(e) {}
+
+  /* Fade in — fast */
+  fade.className = 'off';
+  busy = false;
+
+  if (AUTO[current] !== undefined) {
+    autoTmr = setTimeout(goNext, AUTO[current]);
   }
-
-  /* Fade in */
-  setTimeout(function() {
-    fade.classList.remove('on');
-    busy = false;
-
-    /* Auto-advance for non-interactive screens */
-    if (AUTO[current] !== undefined) {
-      autoTmr = setTimeout(goNext, AUTO[current]);
-    }
-  }, 120);
 });
 
-/* ══════════════════════════════════════════════
-   PARENT SWIPE FALLBACK (for cross-origin)
-   ══════════════════════════════════════════════ */
+var hookedBtns = new WeakSet();
+
+function hookCTAs(doc) {
+  var prefix = platform === 'android' ? 'a' : 'ios';
+  var sels = [
+    '.' + prefix + '-cta',
+    'button[class*="' + prefix + '-cta"]',
+    '.' + prefix + '-continue',
+    '.cta-next',
+    '[data-next]'
+  ];
+  var btns = doc.querySelectorAll(sels.join(','));
+  btns.forEach(function(btn) {
+    if (hookedBtns.has(btn)) return;
+    hookedBtns.add(btn);
+    btn.addEventListener('click', function() {
+      setTimeout(goNext, 200);
+    });
+  });
+}
+
+/* Parent swipe fallback */
 var psx = 0, psy = 0;
 document.addEventListener('touchstart', function(e) {
-  psx = e.touches[0].clientX;
-  psy = e.touches[0].clientY;
+  psx = e.touches[0].clientX; psy = e.touches[0].clientY;
 }, { passive: true });
 document.addEventListener('touchend', function(e) {
   var dx = e.changedTouches[0].clientX - psx;
   var dy = e.changedTouches[0].clientY - psy;
-  if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-    if (dx < 0) goNext();
-    else goPrev();
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+    if (dx < 0) goNext(); else goPrev();
   }
 }, { passive: true });
 
-/* Keyboard (desktop) */
+/* Keyboard */
 document.addEventListener('keydown', function(e) {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goPrev();
